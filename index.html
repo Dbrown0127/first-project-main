@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number Tile Puzzle</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1e2430;
+      --muted: #68717f;
+      --line: #d8dde5;
+      --paper: #f8fafc;
+      --panel: #ffffff;
+      --accent: #2f6fed;
+      --good: #15803d;
+      --good-bg: #e9f8ef;
+      --partial: #a16207;
+      --partial-bg: #fff7d6;
+      --warn: #b42318;
+      --warn-bg: #fff1ef;
+      --shadow: 0 18px 48px rgba(24, 31, 44, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(135deg, rgba(47, 111, 237, 0.09), transparent 38%),
+        linear-gradient(315deg, rgba(21, 128, 61, 0.1), transparent 40%),
+        var(--paper);
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+
+    main {
+      width: min(920px, 100%);
+      display: grid;
+      grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .status-panel,
+    .puzzle-panel {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(216, 221, 229, 0.92);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .status-panel {
+      border-radius: 8px;
+      padding: 22px;
+      position: sticky;
+      top: 28px;
+    }
+
+    .puzzle-panel {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 3.7rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .intro {
+      margin: 0 0 24px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.98rem;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .progress-track {
+      height: 11px;
+      border-radius: 999px;
+      background: #e8edf4;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--good));
+      transition: width 220ms ease;
+    }
+
+    .complete-message {
+      min-height: 52px;
+      margin-top: 18px;
+      color: var(--good);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .tracker {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .tracker-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .tracker-title {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .tracker-items {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tracker-chip {
+      display: grid;
+      place-items: center;
+      min-width: 32px;
+      height: 32px;
+      border: 2px solid #ccd4df;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tracker-chip.used {
+      border-color: #48a868;
+      background: var(--good-bg);
+      color: var(--good);
+    }
+
+    .puzzle-header {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) 50px;
+      gap: 14px;
+      padding: 14px 18px;
+      background: #eef3fb;
+      color: #4d5968;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .rows {
+      display: grid;
+      gap: 0;
+    }
+
+    .puzzle-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) 50px;
+      gap: 14px;
+      align-items: center;
+      min-height: 92px;
+      padding: 18px;
+      border-top: 1px solid var(--line);
+      transition: background 180ms ease, border-color 180ms ease;
+    }
+
+    .result-tile {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1;
+      width: 68px;
+      border: 2px solid #bfc8d6;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 1.85rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      box-shadow: inset 0 -4px 0 rgba(30, 36, 48, 0.06);
+    }
+
+    .entry-wrap {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    input {
+      width: 100%;
+      min-height: 48px;
+      border: 2px solid #ccd4df;
+      border-radius: 8px;
+      padding: 0 14px;
+      color: var(--ink);
+      background: #fff;
+      font: 800 1.08rem/1 ui-monospace, "SFMono-Regular", Consolas, monospace;
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(47, 111, 237, 0.14);
+    }
+
+    input::placeholder {
+      color: #9aa4b2;
+      font-weight: 700;
+    }
+
+    .cue {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 2px solid #cbd3df;
+      color: #94a0ae;
+      font-size: 1.1rem;
+      font-weight: 900;
+    }
+
+    .hint {
+      min-height: 18px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.3;
+    }
+
+    .puzzle-row.correct {
+      background: var(--partial-bg);
+      border-color: #f2d77a;
+    }
+
+    .puzzle-row.correct .result-tile,
+    .puzzle-row.correct input {
+      border-color: #d6aa22;
+    }
+
+    .puzzle-row.correct input {
+      background: #fffdf2;
+      color: var(--partial);
+    }
+
+    .puzzle-row.correct .cue {
+      background: var(--partial);
+      border-color: var(--partial);
+      color: #fff;
+    }
+
+    .puzzle-row.complete {
+      background: var(--good-bg);
+      border-color: #bbebca;
+    }
+
+    .puzzle-row.complete .result-tile,
+    .puzzle-row.complete input {
+      border-color: #48a868;
+    }
+
+    .puzzle-row.complete input {
+      background: #f6fff8;
+      color: var(--good);
+    }
+
+    .puzzle-row.complete .cue {
+      background: var(--good);
+      border-color: var(--good);
+    }
+
+    .puzzle-row.needs-work input {
+      border-color: #f0a096;
+      background: var(--warn-bg);
+    }
+
+    .puzzle-row.needs-work .hint {
+      color: var(--warn);
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 8px;
+      padding: 0 16px;
+      font-weight: 850;
+      color: #fff;
+      background: var(--accent);
+      cursor: pointer;
+      transition: transform 140ms ease, background 140ms ease;
+    }
+
+    button:hover {
+      background: #235fd4;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .secondary {
+      color: var(--ink);
+      background: #e7ecf4;
+    }
+
+    .secondary:hover {
+      background: #dbe3ef;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 18px;
+        place-items: start center;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .status-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .puzzle-header {
+        display: none;
+      }
+
+      .puzzle-row {
+        grid-template-columns: 74px minmax(0, 1fr) 38px;
+        gap: 10px;
+        padding: 16px;
+      }
+
+      .result-tile {
+        width: 62px;
+        font-size: 1.55rem;
+      }
+
+      input {
+        min-height: 46px;
+        font-size: 0.98rem;
+      }
+
+      .cue {
+        width: 34px;
+        height: 34px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="status-panel" aria-labelledby="page-title">
+      <h1 id="page-title">Number Order</h1>
+      <p class="intro">Match each result tile with its mystery calculation. Type the expression, then check your answer. Use each number from 1 through 10 exactly once across the whole puzzle, and use every operation at least once.</p>
+
+      <div class="progress-label">
+        <span>Progress</span>
+        <span id="progress-count">0 / 5</span>
+      </div>
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+
+      <div class="tracker" aria-label="Usage tracker">
+        <div class="tracker-group">
+          <div class="tracker-title">Numbers Used</div>
+          <div class="tracker-items" id="number-tracker"></div>
+        </div>
+        <div class="tracker-group">
+          <div class="tracker-title">Operations Used</div>
+          <div class="tracker-items" id="operation-tracker"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="check-all">Check all</button>
+        <button type="button" class="secondary" id="reset">Reset</button>
+      </div>
+
+      <p class="complete-message" id="complete-message" aria-live="polite"></p>
+    </section>
+
+    <section class="puzzle-panel" aria-label="Calculation puzzle">
+      <div class="puzzle-header" aria-hidden="true">
+        <span>Result</span>
+        <span>Calculation</span>
+        <span>Cue</span>
+      </div>
+      <div class="rows" id="rows"></div>
+    </section>
+  </main>
+
+  <script src="PuzzlesArray.js"></script>
+  <script>
+    function pickRandomPuzzleSet() {
+      const puzzleSets = window.puzzlesArray || [];
+      const randomIndex = Math.floor(Math.random() * puzzleSets.length);
+
+      return puzzleSets[randomIndex];
+    }
+
+    function parseEquationString(equationString) {
+      const match = equationString.match(/^(\d+) ([+\-/x]) (\d+) = (\d+)$/);
+
+      if (!match) {
+        throw new Error(`Invalid equation string: ${equationString}`);
+      }
+
+      const [, a, op, b, result] = match;
+
+      return {
+        a: Number(a),
+        op: op === "x" ? "*" : op,
+        b: Number(b),
+        result: Number(result)
+      };
+    }
+
+    function getAcceptedAnswers(equation) {
+      const baseAnswer = `${equation.a}${equation.op}${equation.b}`;
+
+      if (equation.op === "+" || equation.op === "*") {
+        return [baseAnswer, `${equation.b}${equation.op}${equation.a}`];
+      }
+
+      return [baseAnswer];
+    }
+
+    function getResultLabel(result, resultCounts, seenResults) {
+      if (resultCounts.get(result) === 1) {
+        return `Calculation for ${result}`;
+      }
+
+      const seenCount = (seenResults.get(result) || 0) + 1;
+      seenResults.set(result, seenCount);
+
+      return `Calculation ${seenCount} for ${result}`;
+    }
+
+    function buildPuzzlesFromSet(puzzleSet) {
+      const equations = puzzleSet.map(parseEquationString);
+      const resultCounts = new Map();
+      const seenResults = new Map();
+
+      equations.forEach((equation) => {
+        resultCounts.set(equation.result, (resultCounts.get(equation.result) || 0) + 1);
+      });
+
+      return equations.map((equation) => ({
+        result: equation.result,
+        answers: getAcceptedAnswers(equation),
+        label: getResultLabel(equation.result, resultCounts, seenResults)
+      }));
+    }
+
+    const selectedPuzzleSet = pickRandomPuzzleSet();
+    const puzzles = buildPuzzlesFromSet(selectedPuzzleSet);
+
+    const rows = document.querySelector("#rows");
+    const progressCount = document.querySelector("#progress-count");
+    const progressBar = document.querySelector("#progress-bar");
+    const completeMessage = document.querySelector("#complete-message");
+    const numberTracker = document.querySelector("#number-tracker");
+    const operationTracker = document.querySelector("#operation-tracker");
+    const trackedNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const trackedOperations = ["+", "-", "x", "/"];
+
+    const normalize = (value) => value
+      .toLowerCase()
+      .replaceAll("×", "*")
+      .replaceAll("x", "*")
+      .replaceAll("÷", "/")
+      .replace(/\s+/g, "");
+
+    function parseUserInput(value) {
+      const numberMatches = value.match(/\b10\b|\b[1-9]\b/g) || [];
+      const operationMatch = value.match(/[+\-*/x×÷]/i);
+      const operation = operationMatch
+        ? operationMatch[0].toLowerCase().replace("*", "x").replace("×", "x").replace("÷", "/")
+        : null;
+
+      return {
+        numbers: numberMatches.map(Number),
+        operation: trackedOperations.includes(operation) ? operation : null
+      };
+    }
+
+    function renderTrackerChips(container, values) {
+      container.innerHTML = "";
+
+      values.forEach((value) => {
+        const chip = document.createElement("span");
+        chip.className = "tracker-chip";
+        chip.dataset.value = String(value);
+        chip.textContent = value;
+        container.append(chip);
+      });
+    }
+
+    function getUsageSets() {
+      const numbersUsed = new Set();
+      const operationsUsed = new Set();
+
+      rowElements.forEach((element) => {
+        const parsedInput = parseUserInput(element.input.value);
+
+        parsedInput.numbers.forEach((number) => {
+          if (trackedNumbers.includes(number)) {
+            numbersUsed.add(number);
+          }
+        });
+
+        if (parsedInput.operation) {
+          operationsUsed.add(parsedInput.operation);
+        }
+      });
+
+      return { numbersUsed, operationsUsed };
+    }
+
+    function updateUsageTracker() {
+      const { numbersUsed, operationsUsed } = getUsageSets();
+
+      numberTracker.querySelectorAll(".tracker-chip").forEach((chip) => {
+        chip.classList.toggle("used", numbersUsed.has(Number(chip.dataset.value)));
+      });
+
+      operationTracker.querySelectorAll(".tracker-chip").forEach((chip) => {
+        chip.classList.toggle("used", operationsUsed.has(chip.dataset.value));
+      });
+    }
+
+    const rowElements = puzzles.map((puzzle, index) => {
+      const row = document.createElement("article");
+      row.className = "puzzle-row";
+      row.innerHTML = `
+        <div class="result-tile" aria-label="Result ${puzzle.result}">${puzzle.result}</div>
+        <div class="entry-wrap">
+          <label for="answer-${index}">${puzzle.label}</label>
+          <input
+            id="answer-${index}"
+            type="text"
+            inputmode="text"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="Type a calculation"
+            aria-describedby="hint-${index}"
+          >
+          <div class="hint" id="hint-${index}" aria-live="polite"></div>
+        </div>
+        <div class="cue" aria-hidden="true">?</div>
+      `;
+      rows.append(row);
+
+      const input = row.querySelector("input");
+      const hint = row.querySelector(".hint");
+      const cue = row.querySelector(".cue");
+
+      input.addEventListener("input", () => {
+        row.classList.remove("needs-work");
+        hint.textContent = "";
+        checkRow(index, false);
+        updateUsageTracker();
+      });
+
+      input.addEventListener("blur", () => checkRow(index, true));
+
+      return { row, input, hint, cue, solved: false };
+    });
+
+    function checkRow(index, showMiss) {
+      const puzzle = puzzles[index];
+      const element = rowElements[index];
+      const current = normalize(element.input.value);
+      const isCorrect = puzzle.answers.includes(current);
+
+      if (isCorrect) {
+        element.solved = true;
+        element.row.classList.add("correct");
+        element.row.classList.remove("needs-work");
+        element.cue.textContent = "✓";
+        element.hint.textContent = "Correct";
+      } else if (!element.solved && showMiss && current.length > 0) {
+        element.row.classList.add("needs-work");
+        element.cue.textContent = "?";
+        element.hint.textContent = "Not quite";
+      } else {
+        element.solved = false;
+        element.row.classList.remove("correct", "complete", "needs-work");
+        element.cue.textContent = "?";
+        element.hint.textContent = "";
+      }
+
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const solved = rowElements.filter((element) => element.solved).length;
+      const percent = (solved / puzzles.length) * 100;
+      const isComplete = solved === puzzles.length;
+
+      progressCount.textContent = `${solved} / ${puzzles.length}`;
+      progressBar.style.width = `${percent}%`;
+      rowElements.forEach((element) => {
+        element.row.classList.toggle("complete", isComplete);
+      });
+      completeMessage.textContent = isComplete
+        ? "Puzzle complete. Every tile is in place."
+        : "";
+    }
+
+    document.querySelector("#check-all").addEventListener("click", () => {
+      rowElements.forEach((_, index) => checkRow(index, true));
+    });
+
+    document.querySelector("#reset").addEventListener("click", () => {
+      rowElements.forEach((element) => {
+        element.solved = false;
+        element.row.classList.remove("correct", "complete", "needs-work");
+        element.input.value = "";
+        element.hint.textContent = "";
+        element.cue.textContent = "?";
+      });
+      updateProgress();
+      updateUsageTracker();
+      rowElements[0].input.focus();
+    });
+
+    renderTrackerChips(numberTracker, trackedNumbers);
+    renderTrackerChips(operationTracker, trackedOperations);
+    updateProgress();
+    updateUsageTracker();
+  </script>
+</body>
+</html>
