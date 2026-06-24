@@ -452,7 +452,7 @@
           <ul>
             <li>Use each number from 1-10 exactly once.</li>
             <li>Use each operation at least once.</li>
-            <li>Some equations may be valid but not part of the final solution.</li>
+            <li>ALL equations must be valid and follow these rules for the puzzle to be complete.</li>
           </ul>
         </section>
       </div>
@@ -772,7 +772,7 @@
       } else if (!element.solved && showMiss && element.input.value.trim().length > 0) {
         element.row.classList.add("needs-work");
         element.cue.textContent = "?";
-        element.hint.textContent = "Not quite";
+        element.hint.textContent = "Try Again";
       } else {
         element.solved = false;
         element.row.classList.remove("correct", "complete", "needs-work");
@@ -795,9 +795,9 @@
       });
       completeMessage.classList.toggle("pending", globalState.allRowsValid && !globalState.isSolved);
       completeMessage.textContent = globalState.isSolved
-        ? "Puzzle complete. Every tile is in place."
+        ? "You did it! Great job!"
         : globalState.allRowsValid
-          ? "Not solved yet. Check the number and operation trackers."
+          ? "Not quite. Check what you're missing above"
           : "";
     }
 
