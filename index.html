@@ -555,11 +555,11 @@
     const numberTracker = document.querySelector("#number-tracker");
     const operationTracker = document.querySelector("#operation-tracker");
     const trackedNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const trackedOperations = ["+", "-", "x", "/"];
+    const trackedOperations = ["+", "-", "*", "/"];
 
     function normalizeOperation(operation) {
       return operation
-        ? operation.toLowerCase().replace("*", "x").replace("×", "x").replace("÷", "/")
+        ? operation.toLowerCase().replace("x", "*").replace("×", "*").replace("÷", "/")
         : null;
     }
 
