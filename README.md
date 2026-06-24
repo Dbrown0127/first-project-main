@@ -1,8 +1,8 @@
 # Arithmetic Puzzle
 
-A small local web puzzle where players fill in equations that match five target results.
+Fill in equations that match five target results.
 
-## How The Puzzle Works
+## How It Works
 
 - The page randomly loads one puzzle set.
 - Refreshing the page loads a new puzzle.
@@ -27,7 +27,7 @@ No install, build step, or local server is required.
 
 url deployed!
 
-## Puzzle Difficulty
+## Puzzle Difficulty (forthcoming)
 - HARD: all result numbers between 2 and 15, inclusive
 - MEDIUM: all result numbers less than 19 AND result set not in HARD
 - Easy: all result sets not in MEDIUM AND not in HARD
@@ -42,5 +42,6 @@ url deployed!
 
 ## To Do
 
-- Generate permanent large number array.
+- Generate permanent large result set array.
 - Add a "new puzzle" button if users want a new one.
+- Difficulty settings/toggle/tabs
