@@ -4,7 +4,7 @@
 
 This project is a small interactive arithmetic puzzle page, currently built as a local-first standalone HTML file.
 
-Users solve five result tiles by entering the matching calculations:
+Users solve five result tiles by entering calculations that produce the target results. The original seed example was:
 
 - `3 x 7 = 21`
 - `9 + 8 = 17`
@@ -16,8 +16,9 @@ The puzzle also has whole-board constraints:
 
 - Each number from `1` through `10` is used exactly once.
 - Each operation appears at least once.
-- Addition and multiplication should accept either operand order.
-- Subtraction and division remain order-sensitive.
+- Row validation is result-based, not based on one predefined intended equation.
+- Addition and multiplication naturally accept either operand order because the expression is evaluated.
+- Subtraction and division remain order-sensitive because the expression is evaluated as written.
 
 ## Current Priorities
 
@@ -29,11 +30,12 @@ The puzzle also has whole-board constraints:
 
 ## Product Choices Made So Far
 
-- Correct answers should show a visual success cue.
+- Mathematically valid equations that produce a row's target result should show a visual success cue.
 - Correct answers should remain editable instead of locking the input.
 - If a previously correct answer is changed, the row should return to unsolved.
-- The duplicate `2` result rows are distinct: one expects `6 - 4`, and the other expects `10 / 5`.
-- Instructions should tell users about the number-use and operation-use rules, even though those rules are not fully validated in code yet.
+- Duplicate result rows can be solved by any valid equation that evaluates to that displayed result.
+- A board is only solved when all rows are valid and the global number-use and operation-use rules are satisfied.
+- The tracker should show used, missing, and duplicate numbers, plus used and missing operations.
 
 ## Technical Choices Made So Far
 

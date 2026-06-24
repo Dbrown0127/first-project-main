@@ -69,17 +69,47 @@
     }
 
     h1 {
-      margin: 0 0 10px;
-      font-size: clamp(2rem, 5vw, 3.7rem);
+      margin: 0 0 18px;
+      text-align: center;
+      font-size: clamp(2.45rem, 6vw, 4.1rem);
       line-height: 0.95;
       letter-spacing: 0;
     }
 
-    .intro {
-      margin: 0 0 24px;
+    .instructions {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .instruction-section {
+      display: grid;
+      gap: 8px;
+    }
+
+    .instruction-section h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 0.92rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .instruction-section p,
+    .instruction-section ul {
+      margin: 0;
       color: var(--muted);
       line-height: 1.55;
       font-size: 0.98rem;
+    }
+
+    .instruction-section ul {
+      padding-left: 20px;
+    }
+
+    .instruction-section li + li {
+      margin-top: 4px;
     }
 
     .progress-label {
@@ -114,6 +144,10 @@
       color: var(--good);
       font-weight: 800;
       line-height: 1.35;
+    }
+
+    .complete-message.pending {
+      color: var(--partial);
     }
 
     .tracker {
@@ -158,6 +192,19 @@
       border-color: #48a868;
       background: var(--good-bg);
       color: var(--good);
+    }
+
+    .tracker-chip.missing {
+      border-style: dashed;
+      background: #f7f9fc;
+      color: #7b8491;
+    }
+
+    .tracker-chip.duplicate,
+    .tracker-chip.missing-operation {
+      border-color: #f0a096;
+      background: var(--warn-bg);
+      color: var(--warn);
     }
 
     .puzzle-header {
@@ -392,8 +439,23 @@
 <body>
   <main>
     <section class="status-panel" aria-labelledby="page-title">
-      <h1 id="page-title">Number Order</h1>
-      <p class="intro">Match each result tile with its mystery calculation. Type the expression, then check your answer. Use each number from 1 through 10 exactly once across the whole puzzle, and use every operation at least once.</p>
+      <h1 id="page-title">Arithmetic Puzzle</h1>
+
+      <div class="instructions">
+        <section class="instruction-section" aria-labelledby="premise-heading">
+          <h2 id="premise-heading">Puzzle Premise</h2>
+          <p>Fill in each row with a valid equation that produces the given result.</p>
+        </section>
+
+        <section class="instruction-section" aria-labelledby="constraints-heading">
+          <h2 id="constraints-heading">Constraints</h2>
+          <ul>
+            <li>Use each number from 1-10 exactly once.</li>
+            <li>Use each operation at least once.</li>
+            <li>Some equations may be valid but not part of the final solution.</li>
+          </ul>
+        </section>
+      </div>
 
       <div class="progress-label">
         <span>Progress</span>
@@ -415,7 +477,6 @@
       </div>
 
       <div class="actions">
-        <button type="button" id="check-all">Check all</button>
         <button type="button" class="secondary" id="reset">Reset</button>
       </div>
 
@@ -458,16 +519,6 @@
       };
     }
 
-    function getAcceptedAnswers(equation) {
-      const baseAnswer = `${equation.a}${equation.op}${equation.b}`;
-
-      if (equation.op === "+" || equation.op === "*") {
-        return [baseAnswer, `${equation.b}${equation.op}${equation.a}`];
-      }
-
-      return [baseAnswer];
-    }
-
     function getResultLabel(result, resultCounts, seenResults) {
       if (resultCounts.get(result) === 1) {
         return `Calculation for ${result}`;
@@ -490,7 +541,6 @@
 
       return equations.map((equation) => ({
         result: equation.result,
-        answers: getAcceptedAnswers(equation),
         label: getResultLabel(equation.result, resultCounts, seenResults)
       }));
     }
@@ -507,13 +557,6 @@
     const trackedNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const trackedOperations = ["+", "-", "x", "/"];
 
-    const normalize = (value) => value
-      .toLowerCase()
-      .replaceAll("×", "*")
-      .replaceAll("x", "*")
-      .replaceAll("÷", "/")
-      .replace(/\s+/g, "");
-
     function parseUserInput(value) {
       const numberMatches = value.match(/\b10\b|\b[1-9]\b/g) || [];
       const operationMatch = value.match(/[+\-*/x×÷]/i);
@@ -524,6 +567,99 @@
       return {
         numbers: numberMatches.map(Number),
         operation: trackedOperations.includes(operation) ? operation : null
+      };
+    }
+
+    function parseEquationInput(value) {
+      const match = value.trim().match(/^(\d+)\s*([+\-*/x×÷])\s*(\d+)$/i);
+
+      if (!match) {
+        return null;
+      }
+
+      const [, a, op, b] = match;
+      const operation = op.toLowerCase().replace("*", "x").replace("×", "x").replace("÷", "/");
+
+      if (!trackedOperations.includes(operation)) {
+        return null;
+      }
+
+      return {
+        a: Number(a),
+        op: operation,
+        b: Number(b)
+      };
+    }
+
+    function evaluateExpression(a, op, b) {
+      if (op === "+") {
+        return a + b;
+      }
+
+      if (op === "-") {
+        return a - b;
+      }
+
+      if (op === "x") {
+        return a * b;
+      }
+
+      if (op === "/" && b !== 0 && a % b === 0) {
+        return a / b;
+      }
+
+      return null;
+    }
+
+    function inputMatchesResult(value, targetResult) {
+      const parsedInput = parseEquationInput(value);
+
+      if (!parsedInput) {
+        return false;
+      }
+
+      return evaluateExpression(parsedInput.a, parsedInput.op, parsedInput.b) === targetResult;
+    }
+
+    function getAllInputs() {
+      return rowElements.map((element, index) => ({
+        value: element.input.value,
+        targetResult: puzzles[index].result
+      }));
+    }
+
+    function evaluateGlobalState(allInputs) {
+      const numberCounts = new Map();
+      const operationsUsed = new Set();
+      const allRowsValid = allInputs.every((input) => inputMatchesResult(input.value, input.targetResult));
+
+      allInputs.forEach((input) => {
+        const parsedInput = parseUserInput(input.value);
+
+        parsedInput.numbers.forEach((number) => {
+          if (trackedNumbers.includes(number)) {
+            numberCounts.set(number, (numberCounts.get(number) || 0) + 1);
+          }
+        });
+
+        if (parsedInput.operation) {
+          operationsUsed.add(parsedInput.operation);
+        }
+      });
+
+      const duplicateNumbers = trackedNumbers.filter((number) => (numberCounts.get(number) || 0) > 1);
+      const missingNumbers = trackedNumbers.filter((number) => !numberCounts.has(number));
+      const missingOperations = trackedOperations.filter((operation) => !operationsUsed.has(operation));
+
+      return {
+        allRowsValid,
+        duplicateNumbers,
+        missingNumbers,
+        missingOperations,
+        isSolved: allRowsValid
+          && duplicateNumbers.length === 0
+          && missingNumbers.length === 0
+          && missingOperations.length === 0
       };
     }
 
@@ -539,9 +675,10 @@
       });
     }
 
-    function getUsageSets() {
+    function getUsageState() {
       const numbersUsed = new Set();
       const operationsUsed = new Set();
+      const numberCounts = new Map();
 
       rowElements.forEach((element) => {
         const parsedInput = parseUserInput(element.input.value);
@@ -549,6 +686,7 @@
         parsedInput.numbers.forEach((number) => {
           if (trackedNumbers.includes(number)) {
             numbersUsed.add(number);
+            numberCounts.set(number, (numberCounts.get(number) || 0) + 1);
           }
         });
 
@@ -557,18 +695,27 @@
         }
       });
 
-      return { numbersUsed, operationsUsed };
+      return { numberCounts, numbersUsed, operationsUsed };
     }
 
     function updateUsageTracker() {
-      const { numbersUsed, operationsUsed } = getUsageSets();
+      const { numberCounts, numbersUsed, operationsUsed } = getUsageState();
+      const globalState = evaluateGlobalState(getAllInputs());
 
       numberTracker.querySelectorAll(".tracker-chip").forEach((chip) => {
-        chip.classList.toggle("used", numbersUsed.has(Number(chip.dataset.value)));
+        const number = Number(chip.dataset.value);
+        const useCount = numberCounts.get(number) || 0;
+
+        chip.classList.toggle("used", useCount === 1);
+        chip.classList.toggle("duplicate", useCount > 1);
+        chip.classList.toggle("missing", useCount === 0);
       });
 
       operationTracker.querySelectorAll(".tracker-chip").forEach((chip) => {
-        chip.classList.toggle("used", operationsUsed.has(chip.dataset.value));
+        const operation = chip.dataset.value;
+
+        chip.classList.toggle("used", operationsUsed.has(operation));
+        chip.classList.toggle("missing-operation", globalState.missingOperations.includes(operation));
       });
     }
 
@@ -614,8 +761,7 @@
     function checkRow(index, showMiss) {
       const puzzle = puzzles[index];
       const element = rowElements[index];
-      const current = normalize(element.input.value);
-      const isCorrect = puzzle.answers.includes(current);
+      const isCorrect = inputMatchesResult(element.input.value, puzzle.result);
 
       if (isCorrect) {
         element.solved = true;
@@ -623,7 +769,7 @@
         element.row.classList.remove("needs-work");
         element.cue.textContent = "✓";
         element.hint.textContent = "Correct";
-      } else if (!element.solved && showMiss && current.length > 0) {
+      } else if (!element.solved && showMiss && element.input.value.trim().length > 0) {
         element.row.classList.add("needs-work");
         element.cue.textContent = "?";
         element.hint.textContent = "Not quite";
@@ -640,21 +786,20 @@
     function updateProgress() {
       const solved = rowElements.filter((element) => element.solved).length;
       const percent = (solved / puzzles.length) * 100;
-      const isComplete = solved === puzzles.length;
+      const globalState = evaluateGlobalState(getAllInputs());
 
       progressCount.textContent = `${solved} / ${puzzles.length}`;
       progressBar.style.width = `${percent}%`;
       rowElements.forEach((element) => {
-        element.row.classList.toggle("complete", isComplete);
+        element.row.classList.toggle("complete", globalState.isSolved);
       });
-      completeMessage.textContent = isComplete
+      completeMessage.classList.toggle("pending", globalState.allRowsValid && !globalState.isSolved);
+      completeMessage.textContent = globalState.isSolved
         ? "Puzzle complete. Every tile is in place."
-        : "";
+        : globalState.allRowsValid
+          ? "Not solved yet. Check the number and operation trackers."
+          : "";
     }
-
-    document.querySelector("#check-all").addEventListener("click", () => {
-      rowElements.forEach((_, index) => checkRow(index, true));
-    });
 
     document.querySelector("#reset").addEventListener("click", () => {
       rowElements.forEach((element) => {
