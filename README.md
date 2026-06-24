@@ -1,23 +1,32 @@
-<<<<<<< HEAD
-# Number Order Puzzle
+# Arithmetic Puzzle
 
-An interactive local puzzle page where users solve a set of result tiles by entering arithmetic calculations that produce the displayed results.
+A small local web puzzle where players fill in equations that match five target results.
 
-Each puzzle uses five result tiles. Users must enter mathematically valid calculations that produce those results while using each number from `1` through `10` exactly once across the whole puzzle. Each operation should appear at least once.
+## How The Puzzle Works
 
-## Run Locally
+- The page randomly loads one puzzle set.
+- Each row shows a target result.
+- Enter any valid equation that produces that result.
+- A row turns yellow when its equation is valid.
+- The whole board turns green only when every row and rule is satisfied.
 
-Open `index.html` directly in a web browser.
+## Constraints / Rules
 
-No build step, package install, or local server is required for the current version.
+- Use each number from `1` through `10` exactly once.
+- Use each operation at least once: `+`, `-`, `x`, and `/`.
+- Division must produce a whole number.
+- Some equations can be valid for a row but still not solve the full puzzle.
 
-## Project Goals
+## How To Run Locally
 
-- Create a clear, approachable arithmetic puzzle experience.
-- Make the puzzle easy to test locally while it is still evolving.
-- Keep the code simple enough to revise quickly.
-- Support future publishing as a small standalone web page.
-- Leave room for richer validation, polish, and replayability as the puzzle develops.
-=======
-# first-project-math-riddle
->>>>>>> 211d0653409ccfb0c8e4646e0ffab4d504352c77
+Open `index.html` in a web browser.
+
+No install, build step, or local server is required.
+
+## Features
+
+- Random puzzle selection from a generated puzzle list.
+- Live row validation as you type.
+- Number and operation trackers.
+- Warnings for missing or repeated numbers.
+- Reset button for starting over.
