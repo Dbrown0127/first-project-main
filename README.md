@@ -23,6 +23,10 @@ Open `index.html` in a web browser.
 
 No install, build step, or local server is required.
 
+## GitHub Pages
+
+url deployed!
+
 ## Puzzle Difficulty
 - HARD: all result numbers between 2 and 15, inclusive
 - MEDIUM: all result numbers less than 19 AND result set not in HARD
