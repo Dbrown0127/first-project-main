@@ -557,38 +557,40 @@
     const trackedNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const trackedOperations = ["+", "-", "x", "/"];
 
+    function normalizeOperation(operation) {
+      return operation
+        ? operation.toLowerCase().replace("*", "x").replace("×", "x").replace("÷", "/")
+        : null;
+    }
+
     function parseUserInput(value) {
       const numberMatches = value.match(/\b10\b|\b[1-9]\b/g) || [];
       const operationMatch = value.match(/[+\-*/x×÷]/i);
-      const operation = operationMatch
-        ? operationMatch[0].toLowerCase().replace("*", "x").replace("×", "x").replace("÷", "/")
-        : null;
+      const operation = normalizeOperation(operationMatch ? operationMatch[0] : null);
+      const equationMatch = value.trim().match(/^(\d+)\s*([+\-*/x×÷])\s*(\d+)$/i);
 
-      return {
+      const parsedInput = {
+        a: null,
+        op: null,
+        b: null,
         numbers: numberMatches.map(Number),
         operation: trackedOperations.includes(operation) ? operation : null
       };
-    }
 
-    function parseEquationInput(value) {
-      const match = value.trim().match(/^(\d+)\s*([+\-*/x×÷])\s*(\d+)$/i);
-
-      if (!match) {
-        return null;
+      if (!equationMatch) {
+        return parsedInput;
       }
 
-      const [, a, op, b] = match;
-      const operation = op.toLowerCase().replace("*", "x").replace("×", "x").replace("÷", "/");
+      const [, a, op, b] = equationMatch;
+      const normalizedOperation = normalizeOperation(op);
 
-      if (!trackedOperations.includes(operation)) {
-        return null;
+      if (trackedOperations.includes(normalizedOperation)) {
+        parsedInput.a = Number(a);
+        parsedInput.op = normalizedOperation;
+        parsedInput.b = Number(b);
       }
 
-      return {
-        a: Number(a),
-        op: operation,
-        b: Number(b)
-      };
+      return parsedInput;
     }
 
     function evaluateExpression(a, op, b) {
@@ -612,9 +614,9 @@
     }
 
     function inputMatchesResult(value, targetResult) {
-      const parsedInput = parseEquationInput(value);
+      const parsedInput = parseUserInput(value);
 
-      if (!parsedInput) {
+      if (parsedInput.a === null || parsedInput.op === null || parsedInput.b === null) {
         return false;
       }
 
