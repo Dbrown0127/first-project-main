@@ -1,5 +1,39 @@
 # Devlog
 
+## v0.3.4 - Difficulty Label Rename
+
+**Feature Summary**
+
+Renamed the user-facing difficulty levels without changing the underlying puzzle libraries or classification rules.
+
+**What Changed**
+
+- Updated the difficulty selector and current difficulty display to show Normal, Hard, and Extreme.
+- Added a display-only mapping so internal `easy` puzzles appear as Normal, internal `medium` puzzles appear as Hard, and internal `hard` puzzles appear as Extreme.
+- Updated displayed puzzle ID prefixes while preserving the stored internal puzzle IDs.
+- Updated README and current-state documentation to use the new difficulty names.
+- Clarified generator comments so the old internal keys are not confused with the new public labels.
+
+**Why It Changed**
+
+The puzzle needs clearer user-facing difficulty names while preserving the existing generated puzzle categories and repeat-avoidance data.
+
+**Files Touched**
+
+- `index.html`
+- `README.md`
+- `CURRENT_STATE.md`
+- `generatePuzzles.js`
+- `DEVLOG.md`
+
+**Verification**
+
+- Checked JavaScript syntax for the inline page script and generator.
+- Confirmed in the browser that the selector maps internal `easy` to Normal, `medium` to Hard, and `hard` to Extreme.
+- Confirmed displayed puzzle ID prefixes update to `normal`, `hard`, and `extreme`.
+- Confirmed the static puzzle library counts remain unchanged.
+- Confirmed browser console errors were empty.
+
 ## v0.3.3 - Completed Puzzle Tracking
 
 **Feature Summary**

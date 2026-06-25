@@ -51,10 +51,11 @@ function usesAllOperations(equations) {
   return REQUIRED_OPERATIONS.every((operation) => operations.has(operation));
 }
 
-// Active difficulty rules:
-// Hard: every result is below 16, at least two are below 10, and none are 11 or 13.
-// Easy: at least one result appears in EASY_TRIGGER_RESULTS.
-// Medium: neither Hard nor Easy, with at least one result greater than 16.
+// Active classification rules. Internal keys are still easy/medium/hard.
+// The UI displays those libraries as Normal/Hard/Extreme.
+// Internal hard: every result is below 16, at least two are below 10, and none are 11 or 13.
+// Internal easy: at least one result appears in EASY_TRIGGER_RESULTS.
+// Internal medium: neither internal hard nor internal easy, with at least one result greater than 16.
 function isHardPuzzle(results) {
   const hasAtLeastTwoSingleDigitResults = results
     .filter((result) => result < 10)

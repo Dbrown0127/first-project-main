@@ -6,7 +6,7 @@ Fill in equations that match five target results.
 
 - The page randomly loads one puzzle set.
 - Refreshing the page loads a new puzzle.
-- Players can choose Easy, Medium, or Hard difficulty.
+- Players can choose Normal, Hard, or Extreme difficulty.
 - Completed puzzles are skipped on the same device until that difficulty's pool has been used.
 - Each row shows a target result (should be a whole number).
 - Enter any valid equation that produces that result.
@@ -31,9 +31,9 @@ No install, build step, or local server is required.
   https://dbrown0127.github.io/first-project-main/
 
 ## Puzzle Difficulty
-- Hard: all five results are less than `16`, at least two results are less than `10`, and none are `11` or `13`.
-- Easy: at least one result is in the easy trigger list: `19`, `21`, `27`, `28`, `32`, `35`, `36`, `40`, `42`, `45`, `48`, `50`, `54`, `56`, `60`, `63`, `70`, `72`, `80`, or `90`.
-- Medium: any puzzle that is not Hard or Easy and has at least one result greater than `16`.
+- Normal: at least one result is in the Normal trigger list: `19`, `21`, `27`, `28`, `32`, `35`, `36`, `40`, `42`, `45`, `48`, `50`, `54`, `56`, `60`, `63`, `70`, `72`, `80`, or `90`.
+- Hard: any puzzle that is not Normal or Extreme and has at least one result greater than `16`.
+- Extreme: all five results are less than `16`, at least two results are less than `10`, and none are `11` or `13`.
 
 ## Features
 

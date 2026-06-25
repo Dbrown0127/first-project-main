@@ -7,7 +7,7 @@ Numberdle is a local-first arithmetic puzzle page. Players fill five rows with e
 ## Completed Features
 
 - Random puzzle selection from static difficulty libraries.
-- Difficulty selector for Easy, Medium, and Hard puzzles.
+- Difficulty selector for Normal, Hard, and Extreme puzzles.
 - Current difficulty and puzzle ID display.
 - Local completed-puzzle tracking so solved puzzles are skipped by difficulty on the same device.
 - Five target-result rows with editable equation inputs.
@@ -25,11 +25,12 @@ Numberdle is a local-first arithmetic puzzle page. Players fill five rows with e
 ## Current Architecture
 
 - **Frontend:** Single-page vanilla HTML, CSS, and JavaScript in `index.html`.
-- **Puzzle data:** `data/easyPuzzles.js`, `data/mediumPuzzles.js`, and `data/hardPuzzles.js` contain generated puzzle sets by difficulty and are loaded directly by the UI.
-- **Local state:** Completed puzzle IDs are stored in `localStorage` by difficulty under `numberdle.completedPuzzles`. If a difficulty pool is exhausted, only that difficulty's completed list is cleared.
+- **Puzzle data:** `data/easyPuzzles.js`, `data/mediumPuzzles.js`, and `data/hardPuzzles.js` contain generated puzzle sets by internal difficulty key and are loaded directly by the UI.
+- **Difficulty labels:** The UI presents internal `easy` puzzles as Normal, `medium` puzzles as Hard, and `hard` puzzles as Extreme. The underlying puzzle libraries and classification rules are unchanged.
+- **Local state:** Completed puzzle IDs are stored in `localStorage` by internal difficulty key under `numberdle.completedPuzzles`. If a difficulty pool is exhausted, only that difficulty's completed list is cleared.
 - **Legacy puzzle data:** `PuzzlesArray.js` still exists, but the current UI no longer uses it.
 - **Generation script:** `generatePuzzles.js` creates the static difficulty files with a maximum of 5,000 puzzles per difficulty.
-- **Current generated counts:** Easy has `5000` puzzles, Medium has `5000` puzzles, and Hard has `2682` puzzles.
+- **Current generated counts:** Normal has `5000` puzzles, Hard has `5000` puzzles, and Extreme has `2682` puzzles.
 - **Backend:** None.
 - **Build tooling:** None.
 - **Hosting:** The page can run by opening `index.html` directly. README notes GitHub Pages deployment, but the exact URL is not documented in the repo.
