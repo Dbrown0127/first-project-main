@@ -1,5 +1,40 @@
 # Devlog
 
+## v0.3.3 - Completed Puzzle Tracking
+
+**Feature Summary**
+
+Added local completed-puzzle tracking so solved puzzles are skipped by difficulty on the same device.
+
+**What Changed**
+
+- Added `localStorage` helpers for reading, saving, and safely resetting completed puzzle IDs.
+- Updated puzzle selection to choose from puzzles that have not already been completed for the selected difficulty.
+- Marked a puzzle completed only after the board reaches the full solved state.
+- Cleared only the selected difficulty's completed list when every puzzle in that difficulty has been completed.
+- Aligned the puzzle loader with the generated static data files.
+- Updated project notes to remove repeat-avoidance as future work.
+
+**Why It Changed**
+
+The app now has difficulty-based static libraries, so users should not repeatedly receive puzzles they have already solved on the same device.
+
+**Files Touched**
+
+- `index.html`
+- `README.md`
+- `backlog.md`
+- `CURRENT_STATE.md`
+- `DEVLOG.md`
+
+**Verification**
+
+- Checked JavaScript syntax for the inline page script.
+- Verified in the browser that solving a puzzle reaches the full success state and that returning to the same difficulty skips the completed puzzle ID.
+- Verified changing difficulty clears inputs, resets progress, and loads a new puzzle from the selected difficulty.
+- Tested storage helper behavior for exhausted difficulty pools, corrupted saved data, and immediate completed-ID saving.
+- Confirmed browser console errors were empty.
+
 ## v0.3.2 - Difficulty Rule Reclassification
 
 **Feature Summary**

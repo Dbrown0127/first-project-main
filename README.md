@@ -7,6 +7,7 @@ Fill in equations that match five target results.
 - The page randomly loads one puzzle set.
 - Refreshing the page loads a new puzzle.
 - Players can choose Easy, Medium, or Hard difficulty.
+- Completed puzzles are skipped on the same device until that difficulty's pool has been used.
 - Each row shows a target result (should be a whole number).
 - Enter any valid equation that produces that result.
 - A row turns yellow when its equation is valid.
@@ -41,10 +42,10 @@ No install, build step, or local server is required.
 - Live row validation as you type.
 - Number and operation trackers.
 - Warnings for missing or repeated numbers.
+- Local completed-puzzle tracking by difficulty.
 - Reset button for starting over.
 
 ## To Do
 
 - Generate permanent large result set array.
 - Add a "new puzzle" button if users want a new one.
-- Add repeat-avoidance so users do not see the same puzzle too often.

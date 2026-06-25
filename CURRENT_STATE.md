@@ -9,6 +9,7 @@ Numberdle is a local-first arithmetic puzzle page. Players fill five rows with e
 - Random puzzle selection from static difficulty libraries.
 - Difficulty selector for Easy, Medium, and Hard puzzles.
 - Current difficulty and puzzle ID display.
+- Local completed-puzzle tracking so solved puzzles are skipped by difficulty on the same device.
 - Five target-result rows with editable equation inputs.
 - Live row validation based on evaluated math results.
 - Yellow row state for valid equations.
@@ -25,6 +26,7 @@ Numberdle is a local-first arithmetic puzzle page. Players fill five rows with e
 
 - **Frontend:** Single-page vanilla HTML, CSS, and JavaScript in `index.html`.
 - **Puzzle data:** `data/easyPuzzles.js`, `data/mediumPuzzles.js`, and `data/hardPuzzles.js` contain generated puzzle sets by difficulty and are loaded directly by the UI.
+- **Local state:** Completed puzzle IDs are stored in `localStorage` by difficulty under `numberdle.completedPuzzles`. If a difficulty pool is exhausted, only that difficulty's completed list is cleared.
 - **Legacy puzzle data:** `PuzzlesArray.js` still exists, but the current UI no longer uses it.
 - **Generation script:** `generatePuzzles.js` creates the static difficulty files with a maximum of 5,000 puzzles per difficulty.
 - **Current generated counts:** Easy has `5000` puzzles, Medium has `5000` puzzles, and Hard has `2682` puzzles.
@@ -36,7 +38,6 @@ Numberdle is a local-first arithmetic puzzle page. Players fill five rows with e
 
 - Fix remaining input parsing edge cases, especially compact multiplication such as `9x8`.
 - Add a "new puzzle" button so users do not need to refresh.
-- Add repeat-avoidance after difficulty selection.
 - Refine wording around row-valid versus board-solved feedback.
 - Decide whether to remove or archive legacy `PuzzlesArray.js`.
 
@@ -53,7 +54,6 @@ Numberdle is a local-first arithmetic puzzle page. Players fill five rows with e
 - Inputs like `9x8` do not currently parse for the number tracker the same way as `9 x 8` and `9*8`.
 - GitHub Pages is mentioned in `README.md`, but the deployed URL is not recorded there.
 - There is no in-page "new puzzle" button yet; users refresh the page to get a new puzzle.
-- Repeat-avoidance is not implemented yet.
 
 ## Development Phase
 

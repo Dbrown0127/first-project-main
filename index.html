@@ -553,16 +553,102 @@
   <script src="data/mediumPuzzles.js"></script>
   <script src="data/hardPuzzles.js"></script>
   <script>
+    const completedStorageKey = "numberdle.completedPuzzles";
+
     function getPuzzleLibraries() {
       return {
-        easy: window.easyPuzzles || [],
-        medium: window.mediumPuzzles || [],
-        hard: window.hardPuzzles || []
+        easy: typeof easyPuzzles !== "undefined" ? easyPuzzles : [],
+        medium: typeof mediumPuzzles !== "undefined" ? mediumPuzzles : [],
+        hard: typeof hardPuzzles !== "undefined" ? hardPuzzles : []
       };
     }
 
-    function pickRandomPuzzleSet(difficulty) {
+    function getEmptyCompletedPuzzles() {
+      return {
+        easy: [],
+        medium: [],
+        hard: []
+      };
+    }
+
+    function canUseLocalStorage() {
+      try {
+        const testKey = "numberdle.storageTest";
+        localStorage.setItem(testKey, "1");
+        localStorage.removeItem(testKey);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function getCompletedPuzzles() {
+      if (!canUseLocalStorage()) {
+        return getEmptyCompletedPuzzles();
+      }
+
+      try {
+        const saved = JSON.parse(localStorage.getItem(completedStorageKey));
+        const completed = getEmptyCompletedPuzzles();
+
+        Object.keys(completed).forEach((difficulty) => {
+          if (Array.isArray(saved?.[difficulty])) {
+            completed[difficulty] = saved[difficulty].filter((id) => typeof id === "string");
+          }
+        });
+
+        return completed;
+      } catch {
+        return getEmptyCompletedPuzzles();
+      }
+    }
+
+    function saveCompletedPuzzles(completed) {
+      if (!canUseLocalStorage()) {
+        return;
+      }
+
+      try {
+        localStorage.setItem(completedStorageKey, JSON.stringify(completed));
+      } catch {
+        // Ignore storage failures so the puzzle remains playable.
+      }
+    }
+
+    function clearCompletedDifficulty(difficulty) {
+      const completed = getCompletedPuzzles();
+      completed[difficulty] = [];
+      saveCompletedPuzzles(completed);
+    }
+
+    function markPuzzleCompleted(difficulty, puzzleId) {
+      if (!puzzleId) {
+        return;
+      }
+
+      const completed = getCompletedPuzzles();
+
+      if (!completed[difficulty].includes(puzzleId)) {
+        completed[difficulty].push(puzzleId);
+        saveCompletedPuzzles(completed);
+      }
+    }
+
+    function getAvailablePuzzles(difficulty) {
       const puzzleSets = getPuzzleLibraries()[difficulty] || [];
+      const completedIds = new Set(getCompletedPuzzles()[difficulty] || []);
+      let availablePuzzles = puzzleSets.filter((puzzleSet) => !completedIds.has(puzzleSet.id));
+
+      if (puzzleSets.length > 0 && availablePuzzles.length === 0) {
+        clearCompletedDifficulty(difficulty);
+        availablePuzzles = puzzleSets;
+      }
+
+      return availablePuzzles;
+    }
+
+    function pickRandomPuzzleSet(difficulty) {
+      const puzzleSets = getAvailablePuzzles(difficulty);
 
       if (puzzleSets.length === 0) {
         throw new Error(`No puzzles available for difficulty: ${difficulty}`);
@@ -904,6 +990,9 @@
       rowElements.forEach((element) => {
         element.row.classList.toggle("complete", globalState.isSolved);
       });
+      if (globalState.isSolved) {
+        markPuzzleCompleted(currentDifficulty, currentPuzzle?.id);
+      }
       completeMessage.classList.toggle("pending", globalState.allRowsValid && !globalState.isSolved);
       completeMessage.textContent = globalState.isSolved
         ? "You did it! Great job!"
