@@ -112,6 +112,47 @@
       margin-top: 4px;
     }
 
+    .difficulty-panel {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .difficulty-control {
+      display: grid;
+      gap: 8px;
+    }
+
+    select {
+      min-height: 42px;
+      border: 2px solid #ccd4df;
+      border-radius: 8px;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #fff;
+      font: inherit;
+      font-weight: 800;
+      outline: none;
+    }
+
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(47, 111, 237, 0.14);
+    }
+
+    .difficulty-meta {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .difficulty-meta strong {
+      color: var(--ink);
+      font-weight: 900;
+    }
+
     .progress-label {
       display: flex;
       justify-content: space-between;
@@ -457,6 +498,21 @@
         </section>
       </div>
 
+      <div class="difficulty-panel" aria-label="Difficulty selection">
+        <div class="difficulty-control">
+          <label for="difficulty-select">Difficulty</label>
+          <select id="difficulty-select">
+            <option value="easy" selected>Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+        <div class="difficulty-meta">
+          <span>Current difficulty: <strong id="current-difficulty">Easy</strong></span>
+          <span>Puzzle ID: <strong id="current-puzzle-id">-</strong></span>
+        </div>
+      </div>
+
       <div class="progress-label">
         <span>Progress</span>
         <span id="progress-count">0 / 5</span>
@@ -493,10 +549,25 @@
     </section>
   </main>
 
-  <script src="PuzzlesArray.js"></script>
+  <script src="data/easyPuzzles.js"></script>
+  <script src="data/mediumPuzzles.js"></script>
+  <script src="data/hardPuzzles.js"></script>
   <script>
-    function pickRandomPuzzleSet() {
-      const puzzleSets = window.puzzlesArray || [];
+    function getPuzzleLibraries() {
+      return {
+        easy: window.easyPuzzles || [],
+        medium: window.mediumPuzzles || [],
+        hard: window.hardPuzzles || []
+      };
+    }
+
+    function pickRandomPuzzleSet(difficulty) {
+      const puzzleSets = getPuzzleLibraries()[difficulty] || [];
+
+      if (puzzleSets.length === 0) {
+        throw new Error(`No puzzles available for difficulty: ${difficulty}`);
+      }
+
       const randomIndex = Math.floor(Math.random() * puzzleSets.length);
 
       return puzzleSets[randomIndex];
@@ -513,10 +584,18 @@
 
       return {
         a: Number(a),
-        op: op === "x" ? "*" : op,
+        op,
         b: Number(b),
         result: Number(result)
       };
+    }
+
+    function getEquationsFromPuzzleSet(puzzleSet) {
+      if (Array.isArray(puzzleSet)) {
+        return puzzleSet.map(parseEquationString);
+      }
+
+      return puzzleSet.equations.map((equation) => ({ ...equation }));
     }
 
     function getResultLabel(result, resultCounts, seenResults) {
@@ -531,7 +610,7 @@
     }
 
     function buildPuzzlesFromSet(puzzleSet) {
-      const equations = puzzleSet.map(parseEquationString);
+      const equations = getEquationsFromPuzzleSet(puzzleSet);
       const resultCounts = new Map();
       const seenResults = new Map();
 
@@ -545,21 +624,25 @@
       }));
     }
 
-    const selectedPuzzleSet = pickRandomPuzzleSet();
-    const puzzles = buildPuzzlesFromSet(selectedPuzzleSet);
-
     const rows = document.querySelector("#rows");
     const progressCount = document.querySelector("#progress-count");
     const progressBar = document.querySelector("#progress-bar");
     const completeMessage = document.querySelector("#complete-message");
     const numberTracker = document.querySelector("#number-tracker");
     const operationTracker = document.querySelector("#operation-tracker");
+    const difficultySelect = document.querySelector("#difficulty-select");
+    const currentDifficultyDisplay = document.querySelector("#current-difficulty");
+    const currentPuzzleIdDisplay = document.querySelector("#current-puzzle-id");
     const trackedNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const trackedOperations = ["+", "-", "*", "/"];
+    const trackedOperations = ["+", "-", "x", "/"];
+    let currentDifficulty = "easy";
+    let currentPuzzle = null;
+    let puzzles = [];
+    let rowElements = [];
 
     function normalizeOperation(operation) {
       return operation
-        ? operation.toLowerCase().replace("x", "*").replace("×", "*").replace("÷", "/")
+        ? operation.toLowerCase().replace("*", "x").replace("×", "x").replace("÷", "/")
         : null;
     }
 
@@ -721,7 +804,16 @@
       });
     }
 
-    const rowElements = puzzles.map((puzzle, index) => {
+    function formatDifficultyLabel(difficulty) {
+      return difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+    }
+
+    function updatePuzzleMeta() {
+      currentDifficultyDisplay.textContent = formatDifficultyLabel(currentDifficulty);
+      currentPuzzleIdDisplay.textContent = currentPuzzle?.id || "-";
+    }
+
+    function createRowElement(puzzle, index) {
       const row = document.createElement("article");
       row.className = "puzzle-row";
       row.innerHTML = `
@@ -758,7 +850,24 @@
       input.addEventListener("blur", () => checkRow(index, true));
 
       return { row, input, hint, cue, solved: false };
-    });
+    }
+
+    function renderPuzzle(puzzleSet) {
+      currentPuzzle = puzzleSet;
+      puzzles = buildPuzzlesFromSet(puzzleSet);
+      rows.innerHTML = "";
+      rowElements = puzzles.map(createRowElement);
+      updatePuzzleMeta();
+      updateProgress();
+      updateUsageTracker();
+    }
+
+    function loadPuzzleForDifficulty(difficulty) {
+      currentDifficulty = difficulty;
+      currentPuzzle = pickRandomPuzzleSet(difficulty);
+      renderPuzzle(currentPuzzle);
+      rowElements[0]?.input.focus();
+    }
 
     function checkRow(index, showMiss) {
       const puzzle = puzzles[index];
@@ -816,10 +925,13 @@
       rowElements[0].input.focus();
     });
 
+    difficultySelect.addEventListener("change", () => {
+      loadPuzzleForDifficulty(difficultySelect.value);
+    });
+
     renderTrackerChips(numberTracker, trackedNumbers);
     renderTrackerChips(operationTracker, trackedOperations);
-    updateProgress();
-    updateUsageTracker();
+    loadPuzzleForDifficulty(currentDifficulty);
   </script>
 </body>
 </html>

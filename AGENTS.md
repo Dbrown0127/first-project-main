@@ -40,10 +40,9 @@ The puzzle also has whole-board constraints:
 ## Technical Choices Made So Far
 
 - Use vanilla HTML, CSS, and JavaScript.
-- Keep the app as a single `index.html` file for now.
 - Avoid build tooling, package installs, and framework dependencies.
 - The page should run by opening `index.html` directly in a browser.
-- Add dependencies only when there is a clear reason and the user agrees.
+- Add dependencies only when there is a clear reason.
 
 ## Development Guidance
 
@@ -54,3 +53,57 @@ The puzzle also has whole-board constraints:
 - When adding validation, keep feedback helpful instead of punitive.
 - Preserve mobile-friendly layout and accessible labels.
 - Test both correct and incorrect answer flows after behavior changes.
+- Always update DEVLOG.md after meaningful changes (see below).
+- Always edit CURRENT_STATE.md after meaningful changes (see below).
+- Verify when changes would impact a significant portion of the architecture.
+
+## DEVLOG.md Updates
+
+DEVLOG.mg is the changelog for humans and Codex.
+
+Newest entries go at the top.
+
+Each entry should include:
+
+- Version number.
+- Feature summary.
+- What changed.
+- Why it changed.
+- Files touched.
+- Verification method, if applicable.
+
+## CURRENT_STATE.md
+
+Answers the question "if someone joined the project today, what would they need to know about the project where it stands?"
+
+Sections:
+### Executive Summary
+
+- Should be readable in 30 seconds
+
+### Completed features
+
+- Not everything ever discussed or attempted
+- Just features that are currently working
+
+### Current Architecture
+
+- What technologies are actually in use
+- Frontend and Backend and Hosting
+
+### Current Priorities
+
+- What is the next thing we should work on?
+
+### Long-term Vision
+
+- Ideas for the fully developed version of the project
+
+### Known Issues
+
+- What is still missing?
+- Issues don't need to be solved tomorrow, but this helps us develop goals
+
+### Development Phase
+
+- Where are we on the timeline from Prototype to Public Launch?

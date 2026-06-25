@@ -6,6 +6,7 @@ Fill in equations that match five target results.
 
 - The page randomly loads one puzzle set.
 - Refreshing the page loads a new puzzle.
+- Players can choose Easy, Medium, or Hard difficulty.
 - Each row shows a target result (should be a whole number).
 - Enter any valid equation that produces that result.
 - A row turns yellow when its equation is valid.
@@ -25,16 +26,18 @@ No install, build step, or local server is required.
 
 ## GitHub Pages
 
-url deployed!
+- url deployed
+  https://dbrown0127.github.io/first-project-main/
 
-## Puzzle Difficulty (forthcoming)
-- HARD: all result numbers between 2 and 15, inclusive
-- MEDIUM: all result numbers less than 19 AND result set not in HARD
-- Easy: all result sets not in MEDIUM AND not in HARD
+## Puzzle Difficulty
+- Hard: all five results are less than `16`, at least two results are less than `10`, and none are `11` or `13`.
+- Easy: at least one result is in the easy trigger list: `19`, `21`, `27`, `28`, `32`, `35`, `36`, `40`, `42`, `45`, `48`, `50`, `54`, `56`, `60`, `63`, `70`, `72`, `80`, or `90`.
+- Medium: any puzzle that is not Hard or Easy and has at least one result greater than `16`.
 
 ## Features
 
-- Random puzzle selection from a generated puzzle list.
+- Random puzzle selection by difficulty.
+- Current difficulty and puzzle ID display.
 - Live row validation as you type.
 - Number and operation trackers.
 - Warnings for missing or repeated numbers.
@@ -44,4 +47,4 @@ url deployed!
 
 - Generate permanent large result set array.
 - Add a "new puzzle" button if users want a new one.
-- Difficulty settings/toggle/tabs
+- Add repeat-avoidance so users do not see the same puzzle too often.
