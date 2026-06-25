@@ -1,5 +1,45 @@
 # Devlog
 
+## v0.4.0 - Difficulty System Cleanup
+
+**Feature Summary**
+
+Rebuilt the difficulty system around real Normal, Hard, and Extreme categories and regenerated the static puzzle libraries.
+
+**What Changed**
+
+- Updated `generatePuzzles.js` to classify puzzles as `normal`, `hard`, or `extreme`.
+- Replaced the old generated files with `data/normalPuzzles.js`, `data/hardPuzzles.js`, and `data/extremePuzzles.js`.
+- Removed stale `data/easyPuzzles.js` and `data/mediumPuzzles.js` during generation.
+- Updated the app to load the new libraries directly.
+- Updated completed-puzzle tracking to use the new difficulty keys under `numberdle.completedPuzzlesByDifficulty`.
+- Updated README and current-state docs to describe the new rules and counts.
+
+**Why It Changed**
+
+The project intentionally broke compatibility with the previous Easy/Medium/Hard internals so the code, data files, puzzle IDs, and user-facing labels all use the same difficulty system.
+
+**Files Touched**
+
+- `generatePuzzles.js`
+- `index.html`
+- `data/normalPuzzles.js`
+- `data/hardPuzzles.js`
+- `data/extremePuzzles.js`
+- `data/easyPuzzles.js`
+- `data/mediumPuzzles.js`
+- `README.md`
+- `CURRENT_STATE.md`
+- `DEVLOG.md`
+
+**Verification**
+
+- Ran JavaScript syntax checks for the generator, inline app script, and generated data files.
+- Regenerated the static puzzle libraries.
+- Validated puzzle shape, number use, operation coverage, positive whole-number results, duplicate result set prevention, and all difficulty rules.
+- Confirmed generated counts: `normal: 5000`, `hard: 5000`, `extreme: 4502`.
+- Confirmed only historical documentation still references the old Easy/Medium/internal-label system.
+
 ## v0.3.4 - Difficulty Label Rename
 
 **Feature Summary**

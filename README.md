@@ -31,9 +31,9 @@ No install, build step, or local server is required.
   https://dbrown0127.github.io/first-project-main/
 
 ## Puzzle Difficulty
-- Normal: at least one result is in the Normal trigger list: `19`, `21`, `27`, `28`, `32`, `35`, `36`, `40`, `42`, `45`, `48`, `50`, `54`, `56`, `60`, `63`, `70`, `72`, `80`, or `90`.
+- Normal: at least one result is in the Normal trigger list: `19`, `21`, `27`, `28`, `32`, `36`, `40`, `42`, `45`, `48`, `50`, `54`, `56`, `60`, `63`, `70`, `72`, `80`, or `90`.
 - Hard: any puzzle that is not Normal or Extreme and has at least one result greater than `16`.
-- Extreme: all five results are less than `16`, at least two results are less than `10`, and none are `11` or `13`.
+- Extreme: all five results are less than `16`, with at least two results less than `10`.
 
 ## Features
 

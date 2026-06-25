@@ -502,9 +502,9 @@
         <div class="difficulty-control">
           <label for="difficulty-select">Difficulty</label>
           <select id="difficulty-select">
-            <option value="easy" selected>Normal</option>
-            <option value="medium">Hard</option>
-            <option value="hard">Extreme</option>
+            <option value="normal" selected>Normal</option>
+            <option value="hard">Hard</option>
+            <option value="extreme">Extreme</option>
           </select>
         </div>
         <div class="difficulty-meta">
@@ -549,25 +549,25 @@
     </section>
   </main>
 
-  <script src="data/easyPuzzles.js"></script>
-  <script src="data/mediumPuzzles.js"></script>
+  <script src="data/normalPuzzles.js"></script>
   <script src="data/hardPuzzles.js"></script>
+  <script src="data/extremePuzzles.js"></script>
   <script>
-    const completedStorageKey = "numberdle.completedPuzzles";
+    const completedStorageKey = "numberdle.completedPuzzlesByDifficulty";
 
     function getPuzzleLibraries() {
       return {
-        easy: typeof easyPuzzles !== "undefined" ? easyPuzzles : [],
-        medium: typeof mediumPuzzles !== "undefined" ? mediumPuzzles : [],
-        hard: typeof hardPuzzles !== "undefined" ? hardPuzzles : []
+        normal: typeof normalPuzzles !== "undefined" ? normalPuzzles : [],
+        hard: typeof hardPuzzles !== "undefined" ? hardPuzzles : [],
+        extreme: typeof extremePuzzles !== "undefined" ? extremePuzzles : []
       };
     }
 
     function getEmptyCompletedPuzzles() {
       return {
-        easy: [],
-        medium: [],
-        hard: []
+        normal: [],
+        hard: [],
+        extreme: []
       };
     }
 
@@ -722,16 +722,11 @@
     const trackedNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const trackedOperations = ["+", "-", "x", "/"];
     const difficultyLabels = {
-      easy: "Normal",
-      medium: "Hard",
-      hard: "Extreme"
+      normal: "Normal",
+      hard: "Hard",
+      extreme: "Extreme"
     };
-    const displayedPuzzleIdPrefixes = {
-      easy: "normal",
-      medium: "hard",
-      hard: "extreme"
-    };
-    let currentDifficulty = "easy";
+    let currentDifficulty = "normal";
     let currentPuzzle = null;
     let puzzles = [];
     let rowElements = [];
@@ -908,11 +903,7 @@
       if (!puzzleId) {
         return "-";
       }
-
-      const [difficulty, idNumber] = puzzleId.split("-");
-      const displayedPrefix = displayedPuzzleIdPrefixes[difficulty] || difficulty;
-
-      return idNumber ? `${displayedPrefix}-${idNumber}` : puzzleId;
+      return puzzleId;
     }
 
     function updatePuzzleMeta() {

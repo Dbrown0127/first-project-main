@@ -5,9 +5,8 @@ const NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const REQUIRED_OPERATIONS = ["+", "-", "x", "/"];
 const MAX_PUZZLES_PER_DIFFICULTY = 5000;
 const OUTPUT_DIR = path.join(__dirname, "data");
-const HARD_EXCLUDED_RESULTS = new Set([11, 13]);
-const EASY_TRIGGER_RESULTS = new Set([
-  19, 21, 27, 28, 32, 35, 36, 40, 42, 45, 48,
+const NORMAL_TRIGGER_RESULTS = new Set([
+  19, 21, 27, 28, 32, 36, 40, 42, 45, 48,
   50, 54, 56, 60, 63, 70, 72, 80, 90
 ]);
 
@@ -51,45 +50,41 @@ function usesAllOperations(equations) {
   return REQUIRED_OPERATIONS.every((operation) => operations.has(operation));
 }
 
-// Active classification rules. Internal keys are still easy/medium/hard.
-// The UI displays those libraries as Normal/Hard/Extreme.
-// Internal hard: every result is below 16, at least two are below 10, and none are 11 or 13.
-// Internal easy: at least one result appears in EASY_TRIGGER_RESULTS.
-// Internal medium: neither internal hard nor internal easy, with at least one result greater than 16.
-function isHardPuzzle(results) {
+// Active classification rules:
+// Extreme: every result is below 16 and at least two are below 10.
+// Normal: at least one result appears in NORMAL_TRIGGER_RESULTS.
+// Hard: neither Extreme nor Normal, with at least one result greater than 16.
+function isExtremePuzzle(results) {
   const hasAtLeastTwoSingleDigitResults = results
     .filter((result) => result < 10)
     .length >= 2;
 
   return hasAtLeastTwoSingleDigitResults
-    && results.every((result) => (
-      result < 16
-      && !HARD_EXCLUDED_RESULTS.has(result)
-    ));
+    && results.every((result) => result < 16);
 }
 
-function isEasyPuzzle(results) {
-  return results.some((result) => EASY_TRIGGER_RESULTS.has(result));
+function isNormalPuzzle(results) {
+  return results.some((result) => NORMAL_TRIGGER_RESULTS.has(result));
 }
 
-function isMediumPuzzle(results) {
-  return !isHardPuzzle(results)
-    && !isEasyPuzzle(results)
+function isHardPuzzle(results) {
+  return !isExtremePuzzle(results)
+    && !isNormalPuzzle(results)
     && results.some((result) => result > 16);
 }
 
 function classifyDifficulty(results) {
-  // Difficulty priority matters: classify Hard first, then Easy, then finish with Medium.
+  // Difficulty priority matters: classify Extreme first, then Normal, then finish with Hard.
+  if (isExtremePuzzle(results)) {
+    return "extreme";
+  }
+
+  if (isNormalPuzzle(results)) {
+    return "normal";
+  }
+
   if (isHardPuzzle(results)) {
     return "hard";
-  }
-
-  if (isEasyPuzzle(results)) {
-    return "easy";
-  }
-
-  if (isMediumPuzzle(results)) {
-    return "medium";
   }
 
   return null;
@@ -162,9 +157,9 @@ function combineEquations(pairing, puzzlesByDifficulty, seenResultSets, index = 
 
 function generatePuzzleLibrary() {
   const puzzlesByDifficulty = {
-    easy: [],
-    medium: [],
-    hard: []
+    normal: [],
+    hard: [],
+    extreme: []
   };
   const seenResultSets = new Set();
 
@@ -188,9 +183,9 @@ function writePuzzleFile(fileName, variableName, puzzles) {
 
 function writePuzzleLibrary(puzzlesByDifficulty) {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-  writePuzzleFile("easyPuzzles.js", "easyPuzzles", puzzlesByDifficulty.easy);
-  writePuzzleFile("mediumPuzzles.js", "mediumPuzzles", puzzlesByDifficulty.medium);
+  writePuzzleFile("normalPuzzles.js", "normalPuzzles", puzzlesByDifficulty.normal);
   writePuzzleFile("hardPuzzles.js", "hardPuzzles", puzzlesByDifficulty.hard);
+  writePuzzleFile("extremePuzzles.js", "extremePuzzles", puzzlesByDifficulty.extreme);
 }
 
 function main() {
@@ -198,9 +193,9 @@ function main() {
   writePuzzleLibrary(puzzlesByDifficulty);
 
   console.log(JSON.stringify({
-    easy: puzzlesByDifficulty.easy.length,
-    medium: puzzlesByDifficulty.medium.length,
-    hard: puzzlesByDifficulty.hard.length
+    normal: puzzlesByDifficulty.normal.length,
+    hard: puzzlesByDifficulty.hard.length,
+    extreme: puzzlesByDifficulty.extreme.length
   }, null, 2));
 }
 
@@ -211,8 +206,8 @@ if (require.main === module) {
 module.exports = {
   classifyDifficulty,
   generatePuzzleLibrary,
-  isEasyPuzzle,
+  isExtremePuzzle,
   isHardPuzzle,
-  isMediumPuzzle,
+  isNormalPuzzle,
   getResultKey
 };
