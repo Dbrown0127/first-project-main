@@ -9,7 +9,7 @@ Fill in equations that match five target results.
 - Players can choose Normal, Hard, or Extreme difficulty.
 - Completed puzzles are skipped on the same device until that difficulty's pool has been used.
 - Each row shows a target result (should be a whole number).
-- Enter any valid equation that produces that result.
+- Select the left number, operation, and right number with the on-screen controls.
 - A row turns yellow when its equation is valid.
 - The whole board turns green only when every row and rule is satisfied.
 
@@ -39,8 +39,11 @@ No install, build step, or local server is required.
 
 - Random puzzle selection by difficulty.
 - Current difficulty and puzzle ID display.
-- Live row validation as you type.
-- Number and operation trackers.
+- Controlled equation slots that do not open a mobile keyboard.
+- A compact, sticky number pad and operation picker.
+- Desktop keyboard support, including `0` for the number `10`.
+- Live row validation as slots are filled.
+- Number and operation tracking built into the puzzle controls.
 - Warnings for missing or repeated numbers.
 - Local completed-puzzle tracking by difficulty.
 - Reset button for starting over.

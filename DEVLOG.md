@@ -1,5 +1,39 @@
 # Devlog
 
+## v0.5.0 - Controlled Puzzle Input
+
+**Feature Summary**
+
+Replaced free-text equation entry with mobile-friendly equation slots and a custom keypad.
+
+**What Changed**
+
+- Added separate left-number, operation, and right-number buttons to every puzzle row.
+- Added a sticky number pad whose tile states also show missing, used, and duplicate numbers.
+- Added an operation picker that also shows used and missing operations.
+- Added active-slot highlighting, automatic slot advancement, slot clearing, and immediate row validation.
+- Added desktop keyboard controls for numbers and operations, including `0` for `10`.
+- Adapted row and global validation to consume controlled parsed-expression objects.
+
+**Why It Changed**
+
+Native mobile keyboards occupied too much of the screen and made it difficult to see puzzle rows and usage tracking while entering answers.
+
+**Files Touched**
+
+- `index.html`
+- `README.md`
+- `CURRENT_STATE.md`
+- `DEVLOG.md`
+
+**Verification**
+
+- Checked inline JavaScript syntax.
+- Verified a complete generated solution passes row and global validation.
+- Verified an incorrect completed row fails validation.
+- Verified multiplication and division normalization and whole-number division rules.
+- Checked for removed text-input and legacy tracker references.
+
 ## v0.4.0 - Difficulty System Cleanup
 
 **Feature Summary**

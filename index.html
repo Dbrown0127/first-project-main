@@ -65,7 +65,7 @@
 
     .puzzle-panel {
       border-radius: 8px;
-      overflow: hidden;
+      overflow: visible;
     }
 
     h1 {
@@ -191,66 +191,9 @@
       color: var(--partial);
     }
 
-    .tracker {
-      display: grid;
-      gap: 14px;
-      margin-top: 20px;
-    }
-
-    .tracker-group {
-      display: grid;
-      gap: 8px;
-    }
-
-    .tracker-title {
-      color: var(--muted);
-      font-size: 0.78rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .tracker-items {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .tracker-chip {
-      display: grid;
-      place-items: center;
-      min-width: 32px;
-      height: 32px;
-      border: 2px solid #ccd4df;
-      border-radius: 8px;
-      background: #fff;
-      color: var(--muted);
-      font-weight: 900;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .tracker-chip.used {
-      border-color: #48a868;
-      background: var(--good-bg);
-      color: var(--good);
-    }
-
-    .tracker-chip.missing {
-      border-style: dashed;
-      background: #f7f9fc;
-      color: #7b8491;
-    }
-
-    .tracker-chip.duplicate,
-    .tracker-chip.missing-operation {
-      border-color: #f0a096;
-      background: var(--warn-bg);
-      color: var(--warn);
-    }
-
     .puzzle-header {
       display: grid;
-      grid-template-columns: 92px minmax(0, 1fr) 50px;
+      grid-template-columns: minmax(0, 1fr) 92px 50px;
       gap: 14px;
       padding: 14px 18px;
       background: #eef3fb;
@@ -259,6 +202,7 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.08em;
+      border-radius: 8px 8px 0 0;
     }
 
     .rows {
@@ -268,11 +212,11 @@
 
     .puzzle-row {
       display: grid;
-      grid-template-columns: 92px minmax(0, 1fr) 50px;
+      grid-template-columns: minmax(0, 1fr) 92px 50px;
       gap: 14px;
       align-items: center;
-      min-height: 92px;
-      padding: 18px;
+      min-height: 84px;
+      padding: 14px 18px;
       border-top: 1px solid var(--line);
       transition: background 180ms ease, border-color 180ms ease;
     }
@@ -293,7 +237,7 @@
 
     .entry-wrap {
       display: grid;
-      gap: 8px;
+      gap: 6px;
       min-width: 0;
     }
 
@@ -305,27 +249,38 @@
       letter-spacing: 0.08em;
     }
 
-    input {
-      width: 100%;
+    .equation-slots {
+      display: grid;
+      grid-template-columns: minmax(48px, 1fr) 48px minmax(48px, 1fr);
+      gap: 8px;
+      max-width: 250px;
+    }
+
+    .equation-slot {
+      min-width: 0;
       min-height: 48px;
       border: 2px solid #ccd4df;
       border-radius: 8px;
-      padding: 0 14px;
+      padding: 0 8px;
       color: var(--ink);
       background: #fff;
-      font: 800 1.08rem/1 ui-monospace, "SFMono-Regular", Consolas, monospace;
+      font: 900 1.12rem/1 ui-monospace, "SFMono-Regular", Consolas, monospace;
       outline: none;
       transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
     }
 
-    input:focus {
+    .equation-slot:hover {
+      background: #f7f9fc;
+    }
+
+    .equation-slot:focus-visible,
+    .equation-slot.active {
       border-color: var(--accent);
       box-shadow: 0 0 0 4px rgba(47, 111, 237, 0.14);
     }
 
-    input::placeholder {
+    .equation-slot.empty {
       color: #9aa4b2;
-      font-weight: 700;
     }
 
     .cue {
@@ -353,11 +308,11 @@
     }
 
     .puzzle-row.correct .result-tile,
-    .puzzle-row.correct input {
+    .puzzle-row.correct .equation-slot {
       border-color: #d6aa22;
     }
 
-    .puzzle-row.correct input {
+    .puzzle-row.correct .equation-slot {
       background: #fffdf2;
       color: var(--partial);
     }
@@ -374,11 +329,11 @@
     }
 
     .puzzle-row.complete .result-tile,
-    .puzzle-row.complete input {
+    .puzzle-row.complete .equation-slot {
       border-color: #48a868;
     }
 
-    .puzzle-row.complete input {
+    .puzzle-row.complete .equation-slot {
       background: #f6fff8;
       color: var(--good);
     }
@@ -388,7 +343,7 @@
       border-color: var(--good);
     }
 
-    .puzzle-row.needs-work input {
+    .puzzle-row.needs-work .equation-slot {
       border-color: #f0a096;
       background: var(--warn-bg);
     }
@@ -434,6 +389,125 @@
       background: #dbe3ef;
     }
 
+    .input-console {
+      position: sticky;
+      bottom: 0;
+      z-index: 5;
+      display: grid;
+      gap: 10px;
+      padding: 12px 18px 16px;
+      border-top: 1px solid var(--line);
+      background: rgba(248, 250, 252, 0.97);
+      box-shadow: 0 -10px 24px rgba(24, 31, 44, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 0 0 8px 8px;
+    }
+
+    .console-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .console-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .clear-slot {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      min-height: 32px;
+      padding: 0;
+      border: 1px solid #ccd4df;
+      background: #fff;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .clear-slot:hover {
+      border-color: var(--warn);
+      background: var(--warn-bg);
+      color: var(--warn);
+    }
+
+    .number-pad {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(42px, 1fr));
+      gap: 8px;
+    }
+
+    .number-key,
+    .operation-key {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      min-height: 46px;
+      padding: 0;
+      border: 2px solid #ccd4df;
+      background: #fff;
+      color: var(--ink);
+      font-size: 1rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .number-key:hover,
+    .operation-key:hover {
+      border-color: var(--accent);
+      background: #eef4ff;
+    }
+
+    .number-key:focus-visible,
+    .operation-key:focus-visible {
+      outline: 3px solid rgba(47, 111, 237, 0.3);
+      outline-offset: 2px;
+    }
+
+    .number-key.used,
+    .operation-key.used {
+      border-color: #48a868;
+      background: var(--good-bg);
+      color: var(--good);
+    }
+
+    .number-key.missing,
+    .operation-key.missing-operation {
+      border-style: dashed;
+      color: #7b8491;
+    }
+
+    .number-key.duplicate {
+      border-style: solid;
+      border-color: #f0a096;
+      background: var(--warn-bg);
+      color: var(--warn);
+    }
+
+    .operation-picker {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(42px, 1fr));
+      gap: 8px;
+      opacity: 0.55;
+    }
+
+    .operation-picker.ready {
+      opacity: 1;
+    }
+
+    .operation-key {
+      min-height: 38px;
+      font-size: 1.15rem;
+    }
+
     @media (max-width: 760px) {
       body {
         padding: 18px;
@@ -455,24 +529,42 @@
       }
 
       .puzzle-row {
-        grid-template-columns: 74px minmax(0, 1fr) 38px;
+        grid-template-columns: minmax(0, 1fr) 68px 34px;
         gap: 10px;
-        padding: 16px;
+        min-height: 76px;
+        padding: 10px 12px;
       }
 
       .result-tile {
-        width: 62px;
-        font-size: 1.55rem;
+        width: 58px;
+        font-size: 1.45rem;
       }
 
-      input {
-        min-height: 46px;
-        font-size: 0.98rem;
+      .equation-slots {
+        grid-template-columns: minmax(42px, 1fr) 42px minmax(42px, 1fr);
+        gap: 6px;
+      }
+
+      .equation-slot {
+        min-height: 44px;
+        font-size: 1rem;
       }
 
       .cue {
-        width: 34px;
-        height: 34px;
+        width: 30px;
+        height: 30px;
+      }
+
+      .input-console {
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      }
+
+      .number-pad {
+        gap: 6px;
+      }
+
+      .number-key {
+        min-height: 44px;
       }
     }
   </style>
@@ -521,17 +613,6 @@
         <div class="progress-bar" id="progress-bar"></div>
       </div>
 
-      <div class="tracker" aria-label="Usage tracker">
-        <div class="tracker-group">
-          <div class="tracker-title">Numbers Used</div>
-          <div class="tracker-items" id="number-tracker"></div>
-        </div>
-        <div class="tracker-group">
-          <div class="tracker-title">Operations Used</div>
-          <div class="tracker-items" id="operation-tracker"></div>
-        </div>
-      </div>
-
       <div class="actions">
         <button type="button" class="secondary" id="reset">Reset</button>
       </div>
@@ -541,11 +622,26 @@
 
     <section class="puzzle-panel" aria-label="Calculation puzzle">
       <div class="puzzle-header" aria-hidden="true">
-        <span>Result</span>
         <span>Calculation</span>
+        <span>Result</span>
         <span>Cue</span>
       </div>
       <div class="rows" id="rows"></div>
+      <div class="input-console" aria-label="Equation controls">
+        <div class="console-label">
+          <span>Numbers</span>
+          <span class="console-status">
+            <span id="active-slot-status" aria-live="polite">Choose a slot</span>
+            <button type="button" class="clear-slot" id="clear-slot" aria-label="Clear active slot" title="Clear active slot">&#9003;</button>
+          </span>
+        </div>
+        <div class="number-pad" id="number-pad"></div>
+        <div class="console-label">
+          <span>Operations</span>
+          <span>Used / missing</span>
+        </div>
+        <div class="operation-picker" id="operation-picker"></div>
+      </div>
     </section>
   </main>
 
@@ -714,8 +810,10 @@
     const progressCount = document.querySelector("#progress-count");
     const progressBar = document.querySelector("#progress-bar");
     const completeMessage = document.querySelector("#complete-message");
-    const numberTracker = document.querySelector("#number-tracker");
-    const operationTracker = document.querySelector("#operation-tracker");
+    const numberPad = document.querySelector("#number-pad");
+    const operationPicker = document.querySelector("#operation-picker");
+    const activeSlotStatus = document.querySelector("#active-slot-status");
+    const clearSlotButton = document.querySelector("#clear-slot");
     const difficultySelect = document.querySelector("#difficulty-select");
     const currentDifficultyDisplay = document.querySelector("#current-difficulty");
     const currentPuzzleIdDisplay = document.querySelector("#current-puzzle-id");
@@ -730,6 +828,7 @@
     let currentPuzzle = null;
     let puzzles = [];
     let rowElements = [];
+    let activeSlot = null;
 
     function normalizeOperation(operation) {
       return operation
@@ -737,34 +836,16 @@
         : null;
     }
 
-    function parseUserInput(value) {
-      const numberMatches = value.match(/\b10\b|\b[1-9]\b/g) || [];
-      const operationMatch = value.match(/[+\-*/x×÷]/i);
-      const operation = normalizeOperation(operationMatch ? operationMatch[0] : null);
-      const equationMatch = value.trim().match(/^(\d+)\s*([+\-*/x×÷])\s*(\d+)$/i);
-
-      const parsedInput = {
-        a: null,
-        op: null,
-        b: null,
-        numbers: numberMatches.map(Number),
-        operation: trackedOperations.includes(operation) ? operation : null
-      };
-
-      if (!equationMatch) {
-        return parsedInput;
-      }
-
-      const [, a, op, b] = equationMatch;
+    function createParsedExpression(a, op, b) {
       const normalizedOperation = normalizeOperation(op);
 
-      if (trackedOperations.includes(normalizedOperation)) {
-        parsedInput.a = Number(a);
-        parsedInput.op = normalizedOperation;
-        parsedInput.b = Number(b);
-      }
-
-      return parsedInput;
+      return {
+        a,
+        op: trackedOperations.includes(normalizedOperation) ? normalizedOperation : null,
+        b,
+        numbers: [a, b].filter((number) => Number.isInteger(number)),
+        operation: trackedOperations.includes(normalizedOperation) ? normalizedOperation : null
+      };
     }
 
     function evaluateExpression(a, op, b) {
@@ -787,10 +868,8 @@
       return null;
     }
 
-    function inputMatchesResult(value, targetResult) {
-      const parsedInput = parseUserInput(value);
-
-      if (parsedInput.a === null || parsedInput.op === null || parsedInput.b === null) {
+    function expressionMatchesResult(parsedInput, targetResult) {
+      if (!Number.isInteger(parsedInput.a) || !parsedInput.op || !Number.isInteger(parsedInput.b)) {
         return false;
       }
 
@@ -799,7 +878,7 @@
 
     function getAllInputs() {
       return rowElements.map((element, index) => ({
-        value: element.input.value,
+        parsedInput: createParsedExpression(element.values.a, element.values.op, element.values.b),
         targetResult: puzzles[index].result
       }));
     }
@@ -807,10 +886,12 @@
     function evaluateGlobalState(allInputs) {
       const numberCounts = new Map();
       const operationsUsed = new Set();
-      const allRowsValid = allInputs.every((input) => inputMatchesResult(input.value, input.targetResult));
+      const allRowsValid = allInputs.every((input) => (
+        expressionMatchesResult(input.parsedInput, input.targetResult)
+      ));
 
       allInputs.forEach((input) => {
-        const parsedInput = parseUserInput(input.value);
+        const { parsedInput } = input;
 
         parsedInput.numbers.forEach((number) => {
           if (trackedNumbers.includes(number)) {
@@ -839,16 +920,135 @@
       };
     }
 
-    function renderTrackerChips(container, values) {
-      container.innerHTML = "";
+    function displayOperation(operation) {
+      if (operation === "x") {
+        return "×";
+      }
 
-      values.forEach((value) => {
-        const chip = document.createElement("span");
-        chip.className = "tracker-chip";
-        chip.dataset.value = String(value);
-        chip.textContent = value;
-        container.append(chip);
+      if (operation === "/") {
+        return "÷";
+      }
+
+      return operation;
+    }
+
+    function getOperationName(operation) {
+      return {
+        "+": "plus",
+        "-": "minus",
+        "x": "multiply",
+        "/": "divide"
+      }[operation];
+    }
+
+    function renderInputControls() {
+      numberPad.innerHTML = "";
+      operationPicker.innerHTML = "";
+
+      trackedNumbers.forEach((number) => {
+        const key = document.createElement("button");
+        key.type = "button";
+        key.className = "number-key";
+        key.dataset.value = String(number);
+        key.textContent = number;
+        key.setAttribute("aria-label", `Enter number ${number}`);
+        key.addEventListener("click", () => enterNumber(number));
+        numberPad.append(key);
       });
+
+      trackedOperations.forEach((operation) => {
+        const key = document.createElement("button");
+        key.type = "button";
+        key.className = "operation-key";
+        key.dataset.value = operation;
+        key.textContent = displayOperation(operation);
+        key.setAttribute("aria-label", `Enter operation ${getOperationName(operation)}`);
+        key.addEventListener("click", () => enterOperation(operation));
+        operationPicker.append(key);
+      });
+    }
+
+    function getSlotLabel(type) {
+      return {
+        a: "left number",
+        op: "operation",
+        b: "right number"
+      }[type];
+    }
+
+    function setActiveSlot(rowIndex, type, focusSlot = false) {
+      activeSlot = { rowIndex, type };
+
+      rowElements.forEach((element) => {
+        Object.values(element.slots).forEach((slot) => {
+          const isActive = Number(slot.dataset.rowIndex) === rowIndex && slot.dataset.slot === type;
+          slot.classList.toggle("active", isActive);
+          slot.setAttribute("aria-pressed", String(isActive));
+        });
+      });
+
+      operationPicker.classList.toggle("ready", type === "op");
+      activeSlotStatus.textContent = `Row ${rowIndex + 1}: ${getSlotLabel(type)}`;
+
+      if (focusSlot) {
+        rowElements[rowIndex].slots[type].focus({ preventScroll: true });
+      }
+    }
+
+    function updateSlot(slot, value, type) {
+      slot.textContent = value ?? (type === "op" ? "·" : "—");
+      slot.classList.toggle("empty", value === null);
+    }
+
+    function updateRowSlots(index) {
+      const element = rowElements[index];
+      updateSlot(element.slots.a, element.values.a, "a");
+      updateSlot(element.slots.op, element.values.op ? displayOperation(element.values.op) : null, "op");
+      updateSlot(element.slots.b, element.values.b, "b");
+    }
+
+    function enterNumber(number) {
+      if (!activeSlot || !["a", "b"].includes(activeSlot.type)) {
+        return;
+      }
+
+      const { rowIndex, type } = activeSlot;
+      rowElements[rowIndex].values[type] = number;
+      updateRowSlots(rowIndex);
+      checkRow(rowIndex);
+      updateUsageTracker();
+
+      if (type === "a") {
+        setActiveSlot(rowIndex, "op", true);
+      } else if (rowIndex < rowElements.length - 1) {
+        setActiveSlot(rowIndex + 1, "a", true);
+      }
+    }
+
+    function enterOperation(operation) {
+      if (!activeSlot || activeSlot.type !== "op") {
+        return;
+      }
+
+      const { rowIndex } = activeSlot;
+      rowElements[rowIndex].values.op = normalizeOperation(operation);
+      updateRowSlots(rowIndex);
+      checkRow(rowIndex);
+      updateUsageTracker();
+      setActiveSlot(rowIndex, "b", true);
+    }
+
+    function clearActiveSlot() {
+      if (!activeSlot) {
+        return;
+      }
+
+      const { rowIndex, type } = activeSlot;
+      rowElements[rowIndex].values[type] = null;
+      updateRowSlots(rowIndex);
+      checkRow(rowIndex);
+      updateUsageTracker();
+      setActiveSlot(rowIndex, type, true);
     }
 
     function getUsageState() {
@@ -856,9 +1056,7 @@
       const operationsUsed = new Set();
       const numberCounts = new Map();
 
-      rowElements.forEach((element) => {
-        const parsedInput = parseUserInput(element.input.value);
-
+      getAllInputs().forEach(({ parsedInput }) => {
         parsedInput.numbers.forEach((number) => {
           if (trackedNumbers.includes(number)) {
             numbersUsed.add(number);
@@ -875,23 +1073,27 @@
     }
 
     function updateUsageTracker() {
-      const { numberCounts, numbersUsed, operationsUsed } = getUsageState();
+      const { numberCounts, operationsUsed } = getUsageState();
       const globalState = evaluateGlobalState(getAllInputs());
 
-      numberTracker.querySelectorAll(".tracker-chip").forEach((chip) => {
-        const number = Number(chip.dataset.value);
+      numberPad.querySelectorAll(".number-key").forEach((key) => {
+        const number = Number(key.dataset.value);
         const useCount = numberCounts.get(number) || 0;
 
-        chip.classList.toggle("used", useCount === 1);
-        chip.classList.toggle("duplicate", useCount > 1);
-        chip.classList.toggle("missing", useCount === 0);
+        key.classList.toggle("used", useCount === 1);
+        key.classList.toggle("duplicate", useCount > 1);
+        key.classList.toggle("missing", useCount === 0);
+        key.setAttribute(
+          "aria-label",
+          `Enter number ${number}. ${useCount === 0 ? "Missing" : useCount === 1 ? "Used once" : "Used more than once"}`
+        );
       });
 
-      operationTracker.querySelectorAll(".tracker-chip").forEach((chip) => {
-        const operation = chip.dataset.value;
+      operationPicker.querySelectorAll(".operation-key").forEach((key) => {
+        const operation = key.dataset.value;
 
-        chip.classList.toggle("used", operationsUsed.has(operation));
-        chip.classList.toggle("missing-operation", globalState.missingOperations.includes(operation));
+        key.classList.toggle("used", operationsUsed.has(operation));
+        key.classList.toggle("missing-operation", globalState.missingOperations.includes(operation));
       });
     }
 
@@ -915,39 +1117,42 @@
       const row = document.createElement("article");
       row.className = "puzzle-row";
       row.innerHTML = `
-        <div class="result-tile" aria-label="Result ${puzzle.result}">${puzzle.result}</div>
         <div class="entry-wrap">
-          <label for="answer-${index}">${puzzle.label}</label>
-          <input
-            id="answer-${index}"
-            type="text"
-            inputmode="text"
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-            placeholder="Type a calculation"
-            aria-describedby="hint-${index}"
-          >
+          <label id="answer-label-${index}">${puzzle.label}</label>
+          <div class="equation-slots" role="group" aria-labelledby="answer-label-${index}">
+            <button type="button" class="equation-slot empty" data-row-index="${index}" data-slot="a" aria-label="Row ${index + 1} left number" aria-pressed="false">&mdash;</button>
+            <button type="button" class="equation-slot empty" data-row-index="${index}" data-slot="op" aria-label="Row ${index + 1} operation" aria-pressed="false">&middot;</button>
+            <button type="button" class="equation-slot empty" data-row-index="${index}" data-slot="b" aria-label="Row ${index + 1} right number" aria-pressed="false">&mdash;</button>
+          </div>
           <div class="hint" id="hint-${index}" aria-live="polite"></div>
         </div>
+        <div class="result-tile" aria-label="Result ${puzzle.result}">${puzzle.result}</div>
         <div class="cue" aria-hidden="true">?</div>
       `;
       rows.append(row);
 
-      const input = row.querySelector("input");
       const hint = row.querySelector(".hint");
       const cue = row.querySelector(".cue");
+      const slots = {
+        a: row.querySelector('[data-slot="a"]'),
+        op: row.querySelector('[data-slot="op"]'),
+        b: row.querySelector('[data-slot="b"]')
+      };
 
-      input.addEventListener("input", () => {
-        row.classList.remove("needs-work");
-        hint.textContent = "";
-        checkRow(index, false);
-        updateUsageTracker();
+      Object.entries(slots).forEach(([type, slot]) => {
+        slot.addEventListener("click", () => {
+          setActiveSlot(index, type);
+        });
       });
 
-      input.addEventListener("blur", () => checkRow(index, true));
-
-      return { row, input, hint, cue, solved: false };
+      return {
+        row,
+        slots,
+        values: { a: null, op: null, b: null },
+        hint,
+        cue,
+        solved: false
+      };
     }
 
     function renderPuzzle(puzzleSet) {
@@ -958,19 +1163,27 @@
       updatePuzzleMeta();
       updateProgress();
       updateUsageTracker();
+      setActiveSlot(0, "a");
     }
 
     function loadPuzzleForDifficulty(difficulty) {
       currentDifficulty = difficulty;
       currentPuzzle = pickRandomPuzzleSet(difficulty);
       renderPuzzle(currentPuzzle);
-      rowElements[0]?.input.focus();
     }
 
-    function checkRow(index, showMiss) {
+    function checkRow(index) {
       const puzzle = puzzles[index];
       const element = rowElements[index];
-      const isCorrect = inputMatchesResult(element.input.value, puzzle.result);
+      const parsedInput = createParsedExpression(
+        element.values.a,
+        element.values.op,
+        element.values.b
+      );
+      const isComplete = Number.isInteger(parsedInput.a)
+        && parsedInput.op
+        && Number.isInteger(parsedInput.b);
+      const isCorrect = expressionMatchesResult(parsedInput, puzzle.result);
 
       if (isCorrect) {
         element.solved = true;
@@ -978,7 +1191,9 @@
         element.row.classList.remove("needs-work");
         element.cue.textContent = "✓";
         element.hint.textContent = "Correct";
-      } else if (!element.solved && showMiss && element.input.value.trim().length > 0) {
+      } else if (isComplete) {
+        element.solved = false;
+        element.row.classList.remove("correct", "complete");
         element.row.classList.add("needs-work");
         element.cue.textContent = "?";
         element.hint.textContent = "Try Again";
@@ -1009,7 +1224,7 @@
       completeMessage.textContent = globalState.isSolved
         ? "You did it! Great job!"
         : globalState.allRowsValid
-          ? "Not quite. Check what you're missing above"
+          ? "Not quite. Check the highlighted numbers and operations."
           : "";
     }
 
@@ -1017,21 +1232,46 @@
       rowElements.forEach((element) => {
         element.solved = false;
         element.row.classList.remove("correct", "complete", "needs-work");
-        element.input.value = "";
+        element.values = { a: null, op: null, b: null };
+        updateRowSlots(Number(element.slots.a.dataset.rowIndex));
         element.hint.textContent = "";
         element.cue.textContent = "?";
       });
       updateProgress();
       updateUsageTracker();
-      rowElements[0].input.focus();
+      setActiveSlot(0, "a", true);
     });
 
     difficultySelect.addEventListener("change", () => {
       loadPuzzleForDifficulty(difficultySelect.value);
     });
 
-    renderTrackerChips(numberTracker, trackedNumbers);
-    renderTrackerChips(operationTracker, trackedOperations);
+    clearSlotButton.addEventListener("click", clearActiveSlot);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.ctrlKey || event.metaKey || event.altKey || event.target.matches("select")) {
+        return;
+      }
+
+      if (/^[0-9]$/.test(event.key) && activeSlot && ["a", "b"].includes(activeSlot.type)) {
+        event.preventDefault();
+        enterNumber(event.key === "0" ? 10 : Number(event.key));
+        return;
+      }
+
+      if (/^[+\-x*/]$/i.test(event.key) && activeSlot?.type === "op") {
+        event.preventDefault();
+        enterOperation(event.key);
+        return;
+      }
+
+      if (["Backspace", "Delete"].includes(event.key) && activeSlot) {
+        event.preventDefault();
+        clearActiveSlot();
+      }
+    });
+
+    renderInputControls();
     loadPuzzleForDifficulty(currentDifficulty);
   </script>
 </body>
