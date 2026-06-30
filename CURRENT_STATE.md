@@ -10,7 +10,8 @@ Numberdle is a local-first arithmetic puzzle page. Players fill five rows with e
 - Difficulty selector for Normal, Hard, and Extreme puzzles.
 - Current difficulty and puzzle ID display.
 - Local completed-puzzle tracking so solved puzzles are skipped by difficulty on the same device.
-- Five target-result rows with editable left-number, operation, and right-number slots.
+- Five compact, label-free target-result rows with editable left-number, operation, and right-number slots.
+- Result tiles match the height of the equation slots.
 - Compact custom number pad and operation picker that remain visible at the bottom of the puzzle while scrolling.
 - Full-height Delete and Reset controls integrated into the two number rows.
 - Desktop keyboard support for numbers and operations, with `0` mapped to `10`.

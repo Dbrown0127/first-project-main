@@ -1,5 +1,36 @@
 # Devlog
 
+## v0.5.2 - Compact Puzzle Rows
+
+**Feature Summary**
+
+Reduced each puzzle row to its equation controls, result, and visual validation cue.
+
+**What Changed**
+
+- Removed visible calculation labels and Correct/Try Again feedback text from puzzle rows.
+- Removed the unused label-generation and hint-rendering code.
+- Reduced row padding and minimum height.
+- Matched result-tile heights to equation-slot heights on desktop and mobile.
+- Preserved accessible equation descriptions and all color-coded validation states.
+
+**Why It Changed**
+
+The row colors and cue icon already communicate validation status, so repeated text consumed space without adding useful information.
+
+**Files Touched**
+
+- `index.html`
+- `CURRENT_STATE.md`
+- `DEVLOG.md`
+
+**Verification**
+
+- Checked inline JavaScript syntax.
+- Verified correct, incorrect, and reset row states.
+- Verified result and equation-slot heights match at desktop and mobile sizes.
+- Confirmed row labels and hint text are no longer rendered.
+
 ## v0.5.1 - Compact Keypad Controls
 
 **Feature Summary**

@@ -193,8 +193,8 @@
 
     .puzzle-header {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 92px 50px;
-      gap: 14px;
+      grid-template-columns: minmax(0, 1fr) 68px 38px;
+      gap: 12px;
       padding: 14px 18px;
       background: #eef3fb;
       color: #4d5968;
@@ -212,11 +212,11 @@
 
     .puzzle-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 92px 50px;
-      gap: 14px;
+      grid-template-columns: minmax(0, 1fr) 68px 38px;
+      gap: 12px;
       align-items: center;
-      min-height: 84px;
-      padding: 14px 18px;
+      min-height: 64px;
+      padding: 8px 18px;
       border-top: 1px solid var(--line);
       transition: background 180ms ease, border-color 180ms ease;
     }
@@ -224,21 +224,15 @@
     .result-tile {
       display: grid;
       place-items: center;
-      aspect-ratio: 1;
       width: 68px;
+      height: 48px;
       border: 2px solid #bfc8d6;
       border-radius: 8px;
       background: #fff;
-      font-size: 1.85rem;
+      font-size: 1.55rem;
       font-weight: 900;
       font-variant-numeric: tabular-nums;
       box-shadow: inset 0 -4px 0 rgba(30, 36, 48, 0.06);
-    }
-
-    .entry-wrap {
-      display: grid;
-      gap: 6px;
-      min-width: 0;
     }
 
     label {
@@ -295,13 +289,6 @@
       font-weight: 900;
     }
 
-    .hint {
-      min-height: 18px;
-      color: var(--muted);
-      font-size: 0.86rem;
-      line-height: 1.3;
-    }
-
     .puzzle-row.correct {
       background: var(--partial-bg);
       border-color: #f2d77a;
@@ -346,11 +333,6 @@
     .puzzle-row.needs-work .equation-slot {
       border-color: #f0a096;
       background: var(--warn-bg);
-    }
-
-    .puzzle-row.needs-work .hint {
-      color: var(--warn);
-      font-weight: 700;
     }
 
     button {
@@ -491,14 +473,15 @@
       }
 
       .puzzle-row {
-        grid-template-columns: minmax(0, 1fr) 68px 34px;
-        gap: 10px;
-        min-height: 76px;
-        padding: 10px 12px;
+        grid-template-columns: minmax(0, 1fr) 58px 30px;
+        gap: 8px;
+        min-height: 60px;
+        padding: 8px 12px;
       }
 
       .result-tile {
         width: 58px;
+        height: 44px;
         font-size: 1.45rem;
       }
 
@@ -727,29 +710,10 @@
       return puzzleSet.equations.map((equation) => ({ ...equation }));
     }
 
-    function getResultLabel(result, resultCounts, seenResults) {
-      if (resultCounts.get(result) === 1) {
-        return `Calculation for ${result}`;
-      }
-
-      const seenCount = (seenResults.get(result) || 0) + 1;
-      seenResults.set(result, seenCount);
-
-      return `Calculation ${seenCount} for ${result}`;
-    }
-
     function buildPuzzlesFromSet(puzzleSet) {
       const equations = getEquationsFromPuzzleSet(puzzleSet);
-      const resultCounts = new Map();
-      const seenResults = new Map();
-
-      equations.forEach((equation) => {
-        resultCounts.set(equation.result, (resultCounts.get(equation.result) || 0) + 1);
-      });
-
       return equations.map((equation) => ({
-        result: equation.result,
-        label: getResultLabel(equation.result, resultCounts, seenResults)
+        result: equation.result
       }));
     }
 
@@ -1074,21 +1038,16 @@
       const row = document.createElement("article");
       row.className = "puzzle-row";
       row.innerHTML = `
-        <div class="entry-wrap">
-          <label id="answer-label-${index}">${puzzle.label}</label>
-          <div class="equation-slots" role="group" aria-labelledby="answer-label-${index}">
-            <button type="button" class="equation-slot empty" data-row-index="${index}" data-slot="a" aria-label="Row ${index + 1} left number" aria-pressed="false">&mdash;</button>
-            <button type="button" class="equation-slot empty" data-row-index="${index}" data-slot="op" aria-label="Row ${index + 1} operation" aria-pressed="false">&middot;</button>
-            <button type="button" class="equation-slot empty" data-row-index="${index}" data-slot="b" aria-label="Row ${index + 1} right number" aria-pressed="false">&mdash;</button>
-          </div>
-          <div class="hint" id="hint-${index}" aria-live="polite"></div>
+        <div class="equation-slots" role="group" aria-label="Equation for result ${puzzle.result}">
+          <button type="button" class="equation-slot empty" data-row-index="${index}" data-slot="a" aria-label="Row ${index + 1} left number" aria-pressed="false">&mdash;</button>
+          <button type="button" class="equation-slot empty" data-row-index="${index}" data-slot="op" aria-label="Row ${index + 1} operation" aria-pressed="false">&middot;</button>
+          <button type="button" class="equation-slot empty" data-row-index="${index}" data-slot="b" aria-label="Row ${index + 1} right number" aria-pressed="false">&mdash;</button>
         </div>
         <div class="result-tile" aria-label="Result ${puzzle.result}">${puzzle.result}</div>
         <div class="cue" aria-hidden="true">?</div>
       `;
       rows.append(row);
 
-      const hint = row.querySelector(".hint");
       const cue = row.querySelector(".cue");
       const slots = {
         a: row.querySelector('[data-slot="a"]'),
@@ -1106,7 +1065,6 @@
         row,
         slots,
         values: { a: null, op: null, b: null },
-        hint,
         cue,
         solved: false
       };
@@ -1147,18 +1105,15 @@
         element.row.classList.add("correct");
         element.row.classList.remove("needs-work");
         element.cue.textContent = "✓";
-        element.hint.textContent = "Correct";
       } else if (isComplete) {
         element.solved = false;
         element.row.classList.remove("correct", "complete");
         element.row.classList.add("needs-work");
         element.cue.textContent = "?";
-        element.hint.textContent = "Try Again";
       } else {
         element.solved = false;
         element.row.classList.remove("correct", "complete", "needs-work");
         element.cue.textContent = "?";
-        element.hint.textContent = "";
       }
 
       updateProgress();
@@ -1191,7 +1146,6 @@
         element.row.classList.remove("correct", "complete", "needs-work");
         element.values = { a: null, op: null, b: null };
         updateRowSlots(Number(element.slots.a.dataset.rowIndex));
-        element.hint.textContent = "";
         element.cue.textContent = "?";
       });
       updateProgress();
