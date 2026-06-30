@@ -353,13 +353,6 @@
       font-weight: 700;
     }
 
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 22px;
-    }
-
     button {
       min-height: 42px;
       border: 0;
@@ -380,21 +373,12 @@
       transform: translateY(1px);
     }
 
-    .secondary {
-      color: var(--ink);
-      background: #e7ecf4;
-    }
-
-    .secondary:hover {
-      background: #dbe3ef;
-    }
-
     .input-console {
       position: sticky;
       bottom: 0;
       z-index: 5;
       display: grid;
-      gap: 10px;
+      gap: 8px;
       padding: 12px 18px 16px;
       border-top: 1px solid var(--line);
       background: rgba(248, 250, 252, 0.97);
@@ -403,50 +387,15 @@
       border-radius: 0 0 8px 8px;
     }
 
-    .console-label {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      color: var(--muted);
-      font-size: 0.76rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .console-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .clear-slot {
-      display: grid;
-      place-items: center;
-      width: 32px;
-      min-height: 32px;
-      padding: 0;
-      border: 1px solid #ccd4df;
-      background: #fff;
-      color: var(--muted);
-      font-size: 1rem;
-    }
-
-    .clear-slot:hover {
-      border-color: var(--warn);
-      background: var(--warn-bg);
-      color: var(--warn);
-    }
-
     .number-pad {
       display: grid;
-      grid-template-columns: repeat(5, minmax(42px, 1fr));
+      grid-template-columns: repeat(6, minmax(42px, 1fr));
       gap: 8px;
     }
 
     .number-key,
-    .operation-key {
+    .operation-key,
+    .keypad-action {
       display: grid;
       place-items: center;
       min-width: 0;
@@ -461,15 +410,28 @@
     }
 
     .number-key:hover,
-    .operation-key:hover {
+    .operation-key:hover,
+    .keypad-action:hover {
       border-color: var(--accent);
       background: #eef4ff;
     }
 
     .number-key:focus-visible,
-    .operation-key:focus-visible {
+    .operation-key:focus-visible,
+    .keypad-action:focus-visible {
       outline: 3px solid rgba(47, 111, 237, 0.3);
       outline-offset: 2px;
+    }
+
+    .clear-slot:hover {
+      border-color: var(--warn);
+      background: var(--warn-bg);
+      color: var(--warn);
+    }
+
+    .reset-key {
+      background: #e7ecf4;
+      font-size: 0.82rem;
     }
 
     .number-key.used,
@@ -560,10 +522,12 @@
       }
 
       .number-pad {
+        grid-template-columns: repeat(6, minmax(36px, 1fr));
         gap: 6px;
       }
 
-      .number-key {
+      .number-key,
+      .keypad-action {
         min-height: 44px;
       }
     }
@@ -611,10 +575,6 @@
         <div class="progress-bar" id="progress-bar"></div>
       </div>
 
-      <div class="actions">
-        <button type="button" class="secondary" id="reset">Reset</button>
-      </div>
-
       <p class="complete-message" id="complete-message" aria-live="polite"></p>
     </section>
 
@@ -626,17 +586,7 @@
       </div>
       <div class="rows" id="rows"></div>
       <div class="input-console" aria-label="Equation controls">
-        <div class="console-label">
-          <span>Numbers</span>
-          <span class="console-status">
-            <span id="active-slot-status" aria-live="polite">Choose a slot</span>
-            <button type="button" class="clear-slot" id="clear-slot" aria-label="Clear active slot" title="Clear active slot">&#9003;</button>
-          </span>
-        </div>
         <div class="number-pad" id="number-pad"></div>
-        <div class="console-label">
-          <span>Operations</span>
-        </div>
         <div class="operation-picker" id="operation-picker"></div>
       </div>
     </section>
@@ -809,8 +759,6 @@
     const completeMessage = document.querySelector("#complete-message");
     const numberPad = document.querySelector("#number-pad");
     const operationPicker = document.querySelector("#operation-picker");
-    const activeSlotStatus = document.querySelector("#active-slot-status");
-    const clearSlotButton = document.querySelector("#clear-slot");
     const difficultySelect = document.querySelector("#difficulty-select");
     const currentDifficultyDisplay = document.querySelector("#current-difficulty");
     const currentPuzzleIdDisplay = document.querySelector("#current-puzzle-id");
@@ -951,6 +899,27 @@
         key.setAttribute("aria-label", `Enter number ${number}`);
         key.addEventListener("click", () => enterNumber(number));
         numberPad.append(key);
+
+        if (number === 5) {
+          const clearKey = document.createElement("button");
+          clearKey.type = "button";
+          clearKey.className = "keypad-action clear-slot";
+          clearKey.innerHTML = "&#9003;";
+          clearKey.setAttribute("aria-label", "Clear active slot");
+          clearKey.title = "Clear active slot";
+          clearKey.addEventListener("click", clearActiveSlot);
+          numberPad.append(clearKey);
+        }
+
+        if (number === 10) {
+          const resetKey = document.createElement("button");
+          resetKey.type = "button";
+          resetKey.className = "keypad-action reset-key";
+          resetKey.textContent = "Reset";
+          resetKey.setAttribute("aria-label", "Reset puzzle");
+          resetKey.addEventListener("click", resetPuzzle);
+          numberPad.append(resetKey);
+        }
       });
 
       trackedOperations.forEach((operation) => {
@@ -965,14 +934,6 @@
       });
     }
 
-    function getSlotLabel(type) {
-      return {
-        a: "left number",
-        op: "operation",
-        b: "right number"
-      }[type];
-    }
-
     function setActiveSlot(rowIndex, type, focusSlot = false) {
       activeSlot = { rowIndex, type };
 
@@ -985,7 +946,6 @@
       });
 
       operationPicker.classList.toggle("ready", type === "op");
-      activeSlotStatus.textContent = `Row ${rowIndex + 1}: ${getSlotLabel(type)}`;
 
       if (focusSlot) {
         rowElements[rowIndex].slots[type].focus({ preventScroll: true });
@@ -1225,7 +1185,7 @@
           : "";
     }
 
-    document.querySelector("#reset").addEventListener("click", () => {
+    function resetPuzzle() {
       rowElements.forEach((element) => {
         element.solved = false;
         element.row.classList.remove("correct", "complete", "needs-work");
@@ -1237,13 +1197,11 @@
       updateProgress();
       updateUsageTracker();
       setActiveSlot(0, "a", true);
-    });
+    }
 
     difficultySelect.addEventListener("change", () => {
       loadPuzzleForDifficulty(difficultySelect.value);
     });
-
-    clearSlotButton.addEventListener("click", clearActiveSlot);
 
     document.addEventListener("keydown", (event) => {
       if (event.ctrlKey || event.metaKey || event.altKey || event.target.matches("select")) {

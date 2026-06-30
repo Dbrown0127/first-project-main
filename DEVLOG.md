@@ -1,5 +1,36 @@
 # Devlog
 
+## v0.5.1 - Compact Keypad Controls
+
+**Feature Summary**
+
+Reduced the keypad height and aligned its utility controls with the number tiles.
+
+**What Changed**
+
+- Removed the visible Numbers, Operations, usage, and active-slot label rows.
+- Changed the number pad to six columns.
+- Placed a full-height Delete key after numbers `1` through `5`.
+- Moved Reset from the status panel to a full-height key after numbers `6` through `10`.
+- Preserved the operation row, tracker classes, sticky positioning, and physical keyboard controls.
+
+**Why It Changed**
+
+The label rows and undersized Delete control used valuable mobile screen space without helping the main puzzle interaction.
+
+**Files Touched**
+
+- `index.html`
+- `CURRENT_STATE.md`
+- `DEVLOG.md`
+
+**Verification**
+
+- Checked inline JavaScript syntax.
+- Verified keypad order and six-column responsive layout.
+- Verified number and operation tracker selectors remain unchanged.
+- Verified Delete, Backspace, and Reset handlers still clear the expected state.
+
 ## v0.5.0 - Controlled Puzzle Input
 
 **Feature Summary**
