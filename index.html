@@ -728,6 +728,8 @@
     const currentPuzzleIdDisplay = document.querySelector("#current-puzzle-id");
     const trackedNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const trackedOperations = ["+", "-", "x", "/"];
+    const slotTypes = ["a", "op", "b"];
+    const numberSlotTypes = ["a", "b"];
     const difficultyLabels = {
       normal: "Normal",
       hard: "Hard",
@@ -869,9 +871,9 @@
           clearKey.type = "button";
           clearKey.className = "keypad-action clear-slot";
           clearKey.innerHTML = "&#9003;";
-          clearKey.setAttribute("aria-label", "Clear active slot");
-          clearKey.title = "Clear active slot";
-          clearKey.addEventListener("click", clearActiveSlot);
+          clearKey.setAttribute("aria-label", "Delete current or previous entry");
+          clearKey.title = "Delete current or previous entry";
+          clearKey.addEventListener("click", deleteEntry);
           numberPad.append(clearKey);
         }
 
@@ -929,7 +931,7 @@
     }
 
     function enterNumber(number) {
-      if (!activeSlot || !["a", "b"].includes(activeSlot.type)) {
+      if (!activeSlot || !numberSlotTypes.includes(activeSlot.type)) {
         return;
       }
 
@@ -959,17 +961,39 @@
       setActiveSlot(rowIndex, "b", true);
     }
 
-    function clearActiveSlot() {
-      if (!activeSlot) {
+    function deleteEntry() {
+      if (!activeSlot || evaluateGlobalState(getAllInputs()).isSolved) {
         return;
       }
 
-      const { rowIndex, type } = activeSlot;
+      let targetSlot = activeSlot;
+
+      if (rowElements[targetSlot.rowIndex].values[targetSlot.type] === null) {
+        targetSlot = getPreviousSlot(targetSlot.rowIndex, targetSlot.type);
+      }
+
+      if (!targetSlot) {
+        return;
+      }
+
+      const { rowIndex, type } = targetSlot;
       rowElements[rowIndex].values[type] = null;
       updateRowSlots(rowIndex);
       checkRow(rowIndex);
       updateUsageTracker();
       setActiveSlot(rowIndex, type, true);
+    }
+
+    function getPreviousSlot(rowIndex, type) {
+      const typeIndex = slotTypes.indexOf(type);
+
+      if (typeIndex > 0) {
+        return { rowIndex, type: slotTypes[typeIndex - 1] };
+      }
+
+      return rowIndex > 0
+        ? { rowIndex: rowIndex - 1, type: slotTypes[slotTypes.length - 1] }
+        : null;
     }
 
     function getUsageState() {
@@ -1162,7 +1186,7 @@
         return;
       }
 
-      if (/^[0-9]$/.test(event.key) && activeSlot && ["a", "b"].includes(activeSlot.type)) {
+      if (/^[0-9]$/.test(event.key) && activeSlot && numberSlotTypes.includes(activeSlot.type)) {
         event.preventDefault();
         enterNumber(event.key === "0" ? 10 : Number(event.key));
         return;
@@ -1176,7 +1200,7 @@
 
       if (["Backspace", "Delete"].includes(event.key) && activeSlot) {
         event.preventDefault();
-        clearActiveSlot();
+        deleteEntry();
       }
     });
 

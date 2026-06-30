@@ -1,5 +1,37 @@
 # Devlog
 
+## v0.5.3 - Backward Delete Navigation
+
+**Feature Summary**
+
+Made keypad and keyboard deletion follow the puzzle's slot order.
+
+**What Changed**
+
+- Added a shared slot-order helper for moving backward through number and operation slots.
+- Updated Delete and keyboard Backspace/Delete to clear the active value when present.
+- When the active slot is empty, Delete now moves backward and clears the previous slot, including across rows.
+- Prevented Delete from changing a globally solved puzzle.
+- Updated the Delete control's accessible label and tooltip.
+
+**Why It Changed**
+
+Automatic slot advancement left users on an empty slot after entry, forcing them to tap the previous slot before correcting their last value.
+
+**Files Touched**
+
+- `index.html`
+- `CURRENT_STATE.md`
+- `DEVLOG.md`
+
+**Verification**
+
+- Checked inline JavaScript syntax.
+- Verified deletion from filled and empty slots.
+- Verified backward deletion across a row boundary.
+- Verified keypad and physical keyboard behavior.
+- Verified solved puzzles ignore Delete without changing validation state.
+
 ## v0.5.2 - Compact Puzzle Rows
 
 **Feature Summary**

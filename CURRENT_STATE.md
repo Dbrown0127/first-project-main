@@ -14,10 +14,12 @@ Numberdle is a local-first arithmetic puzzle page. Players fill five rows with e
 - Result tiles match the height of the equation slots.
 - Compact custom number pad and operation picker that remain visible at the bottom of the puzzle while scrolling.
 - Full-height Delete and Reset controls integrated into the two number rows.
+- Delete and keyboard Backspace/Delete clear the active entry or step backward across slots and rows.
 - Desktop keyboard support for numbers and operations, with `0` mapped to `10`.
 - Live row validation based on evaluated math results.
 - Yellow row state for valid equations.
 - Full green solved state only when row validation and global constraints pass.
+- Delete controls are disabled behaviorally after the board reaches the solved state.
 - Number pad states for used, missing, and duplicate numbers.
 - Operation picker states for used and missing operations.
 - Reset button that clears slots and tracker state.
